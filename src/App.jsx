@@ -1,31 +1,23 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-// Import your Context
-import { AuthProvider } from './context/AuthContext';
-
-// Import your Protected Route
+import {AuthProvider} from './Context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Import Pages (We will create these files later)
-import Login from './pages/Auth/Login';
-import Register from './pages/Auth/Register';
-import DashboardHome from './pages/Dashboard/Home';
-import Transfer from './pages/Dashboard/Transfer';
-import Settings from './pages/Dashboard/Settings';
-import NotFound from './pages/NotFound';
+import Login from './Pages/Auth/Login'
+import Register from './Pages/Auth/Register'
+import DashboardHome from './Pages/Dashboard/Home';
+import Transfer from './Pages/Dashboard/Transfer';
+import Settings from './Pages/Dashboard/Settings';
+import NotFound from './Pages/NotFound';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          {/* PUBLIC ROUTES - Anyone can see these */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
-          {/* PRIVATE ROUTES - Only logged-in users can see these */}
           <Route 
             path="/" 
             element={
@@ -52,12 +44,8 @@ function App() {
               </ProtectedRoute>
             } 
           />
-
-          {/* CATCH ALL - If they type a random URL, send them to 404 or Login */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-
-        {/* Global Toast Notifications (placed here to work everywhere) */}
         <ToastContainer />
       </Router>
     </AuthProvider>
