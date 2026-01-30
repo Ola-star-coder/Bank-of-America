@@ -1,16 +1,16 @@
-// src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  GoogleAuthProvider,   // <--- Added
+  signInWithPopup       // <--- Added
 } from "firebase/auth";
 import { auth } from "../Firebase/config";
 
 const AuthContext = createContext();
 
-// Custom hook to use the auth context easily
 export function useAuth() {
   return useContext(AuthContext);
 }
@@ -19,35 +19,41 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 1. Sign Up Function
+  // 1. Sign Up (Email/Password)
   function signup(email, password) {
     return createUserWithEmailAndPassword(auth, email, password);
   }
 
-  // 2. Login Function
+  // 2. Login (Email/Password)
   function login(email, password) {
     return signInWithEmailAndPassword(auth, email, password);
   }
 
-  // 3. Logout Function
+  // 3. Login (Google) --- NEW ADDITION ---
+  function googleSignIn() {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(auth, provider);
+  }
+
+  // 4. Logout
   function logout() {
     return signOut(auth);
   }
 
-  // 4. Monitor Auth State (The "Persistence" Logic)
+  // 5. Monitor User State
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setLoading(false); // Done loading once we know if user exists or not
+      setLoading(false);
     });
-
-    return () => unsubscribe(); // Cleanup
+    return () => unsubscribe();
   }, []);
 
   const value = {
     user,
     signup,
     login,
+    googleSignIn, // <--- Exported here so pages can use it
     logout,
     loading
   };

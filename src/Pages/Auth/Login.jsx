@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // <--- Added useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import { GoogleLogo, AppleLogo, FacebookLogo, Eye, EyeSlash } from 'phosphor-react';
 import './Auth.css'; 
@@ -9,32 +9,41 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // <--- Added loading state to prevent double clicks
+  const [loading, setLoading] = useState(false);
   
-  const { login } = useAuth();
-  const navigate = useNavigate(); // <--- Initialize navigation hook
+  // Get googleSignIn from context
+  const { login, googleSignIn } = useAuth(); 
+  const navigate = useNavigate();
 
+  // Handle standard Email/Password Login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true); // Disable button while loading
-
+    setLoading(true);
     try {
       await login(email, password);
-      // SUCCESS! Redirect to Dashboard
       navigate('/'); 
     } catch (err) {
-      // Error handling
+      setError('Failed to log in. Please check your details.');
+      setLoading(false);
+    }
+  };
+
+  // Handle Google Login --- NEW ADDITION ---
+  const handleGoogleLogin = async () => {
+    try {
+      setError('');
+      await googleSignIn();
+      navigate('/'); // Go to dashboard immediately
+    } catch (err) {
       console.error(err);
-      setError('Failed to log in. Please check your email and password.');
-      setLoading(false); // Re-enable button if it failed
+      setError('Failed to login with Google.');
     }
   };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
-        {/* Logo Icon */}
         <div className="auth-logo">
           <div className="logo-shape"></div>
         </div>
@@ -42,7 +51,6 @@ const Login = () => {
         <h2>Login</h2>
         <p className="auth-subtitle">Login to continue using the app</p>
 
-        {/* Error Message Display */}
         {error && <div className="auth-error" style={{color: 'red', fontSize: '14px', marginBottom: '10px', textAlign: 'center'}}>{error}</div>}
 
         <form onSubmit={handleSubmit}>
@@ -88,9 +96,24 @@ const Login = () => {
         <div className="divider">Or Login with</div>
 
         <div className="social-login">
-          <button className="social-btn" type="button"><FacebookLogo size={24} weight="fill" color="#1877F2" /></button>
-          <button className="social-btn" type="button"><GoogleLogo size={24} weight="bold" color="#EA4335" /></button>
-          <button className="social-btn" type="button"><AppleLogo size={24} weight="fill" /></button>
+          {/* Facebook (Decorative for now) */}
+          <button className="social-btn" type="button">
+            <FacebookLogo size={24} weight="fill" color="#1877F2" />
+          </button>
+          
+          {/* Google (FUNCTIONAL) */}
+          <button 
+            className="social-btn" 
+            type="button" 
+            onClick={handleGoogleLogin}
+          >
+            <GoogleLogo size={24} weight="bold" color="#EA4335" />
+          </button>
+          
+          {/* Apple (Decorative for now) */}
+          <button className="social-btn" type="button">
+            <AppleLogo size={24} weight="fill" />
+          </button>
         </div>
 
         <p className="auth-footer">
