@@ -12,10 +12,10 @@ const Home = () => {
   const [accountNum, setAccountNum] = useState('Loading...');
 
   const getFirstName = () => {
-    if (user?.displayName) {
-      return user.displayName.split(' ')[0]; 
-    }
-    return user?.email?.split('@')[0]; 
+    const rawName = user?.displayName || user?.email?.split('@')[0];
+    const nameNoNumbers = rawName.replace(/[0-9]/g, '');
+    if (!nameNoNumbers) return 'User'; 
+    return nameNoNumbers.charAt(0).toUpperCase() + nameNoNumbers.slice(1);
   };
 
   useEffect(() => {
