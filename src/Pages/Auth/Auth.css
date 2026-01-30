@@ -30,11 +30,16 @@
 }
 
 .logo-shape {
-    width: 50px;
-    height: 50px;
+    width: 100px;
+    height: 60px;
+    padding: 1rem;
     background-color: var(--primary-orange);
     border-radius: 12px;
-    /* You can replace this div with an <img /> later */
+    text-align: center;
+    color: var(--input-bg);
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
 }
 
 h2 {

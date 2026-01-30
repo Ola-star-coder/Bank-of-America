@@ -4,3 +4,18 @@
   font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
 }
+
+:root {
+  --bg-dark: #0F0F11;
+  --surface-dark: #1C1C1E;
+  --text-white: #FFFFFF;
+  --text-grey: #8E8E93;
+  --border-dark: #2C2C2E;
+  --card-gradient: linear-gradient(110deg, #3A1C71 0%, #D76D77 50%, #FFAF7B 100%);
+  --card-gradient-blue: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-white);
+}

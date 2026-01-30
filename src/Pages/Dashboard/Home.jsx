@@ -1,86 +1,132 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../Context/AuthContext';
-import { Eye, EyeSlash, PaperPlaneTilt, Wallet, CreditCard, CaretRight } from 'phosphor-react';
-import './Dashboard.css'; // We will write this next
+import { 
+  Eye, EyeSlash, PaperPlaneTilt, Wallet, 
+  CreditCard, SquaresFour, Bell, CaretDown 
+} from 'phosphor-react';
+import './Dashboard.css';
 
 const Home = () => {
   const { user } = useAuth();
   const [showBalance, setShowBalance] = useState(true);
+  const [accountNum, setAccountNum] = useState('Loading...');
 
-  // Fake Data for visual testing
-  const [balance, setBalance] = useState(125000.50);
+  const getFirstName = () => {
+    if (user?.displayName) {
+      return user.displayName.split(' ')[0]; 
+    }
+    return user?.email?.split('@')[0]; 
+  };
+
+  useEffect(() => {
+    const savedNum = localStorage.getItem(`acc_num_${user?.uid}`);
+    if (savedNum) {
+      setAccountNum(savedNum);
+    } else {
+      const newNum = '2' + Math.floor(Math.random() * 900000000 + 100000000).toString();
+      localStorage.setItem(`acc_num_${user?.uid}`, newNum);
+      setAccountNum(newNum);
+    }
+  }, [user]);
+
+ 
   const transactions = [
-    { id: 1, title: 'Netflix Subscription', date: 'Today, 9:41 AM', amount: -15.00, type: 'debit' },
-    { id: 2, title: 'Transfer from John', date: 'Yesterday, 4:20 PM', amount: 250.00, type: 'credit' },
-    { id: 3, title: 'Grocery Store', date: 'Jan 28, 2026', amount: -85.20, type: 'debit' },
+    { id: 1, title: 'Netflix Subscription', date: 'Today, 9:41 AM', amount: -4500, type: 'debit', icon: 'N' },
+    { id: 2, title: 'Janet Rollings', date: 'Yesterday, 4:20 PM', amount: 25000, type: 'credit', icon: 'J' },
+    { id: 3, title: 'Data Topup', date: 'Jan 28, 2026', amount: -1000, type: 'debit', icon: 'D' }
   ];
 
   return (
     <div className="dashboard-container">
-      {/* Header */}
       <header className="dash-header">
-        <div className="user-greeting">
-          <div className="avatar">
-            {user?.email?.charAt(0).toUpperCase()}
+        <div className="user-profile">
+          <div className="profile-pic">
+            {user?.photoURL ? (
+              <img src={user.photoURL} alt="Profile" />
+            ) : (
+              <span>{getFirstName().charAt(0).toUpperCase()}</span>
+            )}
           </div>
-          <div className="texts">
-            <span className="welcome-text">Welcome back,</span>
-            <h3>{user?.email?.split('@')[0]}</h3>
+          <div className="greeting">
+            <span>Good Morning,</span>
+            <h3>{getFirstName()}</h3>
           </div>
         </div>
+        
+        <button className="notif-btn">
+          <Bell size={24} weight="fill" />
+          <div className="red-dot"></div>
+        </button>
       </header>
 
-      {/* Main Balance Card */}
-      <div className="balance-card">
+      <div className="premium-card">
         <div className="card-top">
-          <span>Total Balance</span>
-          <button onClick={() => setShowBalance(!showBalance)} className="eye-btn">
-            {showBalance ? <Eye size={22} color="white" /> : <EyeSlash size={22} color="white" />}
+          <span className="card-label">Total Balance</span>
+          <div className="card-brand">
+            <span className="circles"></span>
+            VISA
+          </div>
+        </div>
+        
+        <div className="card-balance">
+          <h1>
+            {showBalance ? `$12,500,000` : '$ ****'}
+          </h1>
+          <button onClick={() => setShowBalance(!showBalance)} className="toggle-eye">
+            {showBalance ? <Eye size={20} /> : <EyeSlash size={20} />}
           </button>
         </div>
-        <div className="balance-amount">
-          <h1>{showBalance ? `$${balance.toLocaleString()}` : '****'}</h1>
-        </div>
+
         <div className="card-bottom">
-          <span>Account: 1234567890</span>
+          <div className="acc-details">
+            <span>Account Number</span>
+            <p>{accountNum} <span className="copy-icon">❐</span></p>
+          </div>
+          <div className="exp-date">
+            <span>Exp</span>
+            <p>12/28</p>
+          </div>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="quick-actions">
-        <button className="action-btn">
-          <div className="icon-box"><PaperPlaneTilt size={24} /></div>
+      <div className="actions-grid">
+        <div className="action-item">
+          <button className="action-circle purple"><PaperPlaneTilt size={24} weight="fill" /></button>
           <span>Transfer</span>
-        </button>
-        <button className="action-btn">
-          <div className="icon-box"><Wallet size={24} /></div>
+        </div>
+        <div className="action-item">
+          <button className="action-circle green"><Wallet size={24} weight="fill" /></button>
           <span>Top-up</span>
-        </button>
-        <button className="action-btn">
-          <div className="icon-box"><CreditCard size={24} /></div>
+        </div>
+        <div className="action-item">
+          <button className="action-circle blue"><CreditCard size={24} weight="fill" /></button>
           <span>Cards</span>
-        </button>
+        </div>
+        <div className="action-item">
+          <button className="action-circle grey"><SquaresFour size={24} weight="fill" /></button>
+          <span>More</span>
+        </div>
       </div>
 
-      {/* Recent Transactions */}
+      {/* 4. TRANSACTION LIST */}
       <div className="transactions-section">
         <div className="section-header">
           <h4>Recent Transactions</h4>
           <button className="see-all">See All</button>
         </div>
 
-        <div className="transaction-list">
+        <div className="t-list">
           {transactions.map((t) => (
-            <div key={t.id} className="transaction-item">
-              <div className="t-icon">
-                {t.type === 'credit' ? <Wallet weight="fill" color="#27AE60" /> : <CreditCard weight="fill" color="#FF5A1F" />}
+            <div key={t.id} className="t-item">
+              <div className={`t-avatar ${t.type}`}>
+                {t.icon}
               </div>
-              <div className="t-details">
+              <div className="t-info">
                 <h5>{t.title}</h5>
                 <span>{t.date}</span>
               </div>
               <div className={`t-amount ${t.type}`}>
-                {t.type === 'credit' ? '+' : '-'}${Math.abs(t.amount)}
+                {t.type === 'credit' ? '+' : '-'}${Math.abs(t.amount).toLocaleString()}
               </div>
             </div>
           ))}
@@ -90,4 +136,4 @@ const Home = () => {
   );
 };
 
-export default Home; 
+export default Home;

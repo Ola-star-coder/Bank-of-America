@@ -29,12 +29,12 @@ const Login = () => {
     }
   };
 
-  // Handle Google Login --- NEW ADDITION ---
+
   const handleGoogleLogin = async () => {
     try {
       setError('');
       await googleSignIn();
-      navigate('/'); // Go to dashboard immediately
+      navigate('/');
     } catch (err) {
       console.error(err);
       setError('Failed to login with Google.');
@@ -45,7 +45,7 @@ const Login = () => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-logo">
-          <div className="logo-shape"></div>
+          <div className="logo-shape">BOA</div>
         </div>
 
         <h2>Login</h2>
@@ -96,12 +96,10 @@ const Login = () => {
         <div className="divider">Or Login with</div>
 
         <div className="social-login">
-          {/* Facebook (Decorative for now) */}
           <button className="social-btn" type="button">
             <FacebookLogo size={24} weight="fill" color="#1877F2" />
           </button>
           
-          {/* Google (FUNCTIONAL) */}
           <button 
             className="social-btn" 
             type="button" 
@@ -110,7 +108,6 @@ const Login = () => {
             <GoogleLogo size={24} weight="bold" color="#EA4335" />
           </button>
           
-          {/* Apple (Decorative for now) */}
           <button className="social-btn" type="button">
             <AppleLogo size={24} weight="fill" />
           </button>
