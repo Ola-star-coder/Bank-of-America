@@ -322,3 +322,86 @@
 .t-amount.debit {
     color: #fff;
 }
+
+.dashboard-container {
+    padding-bottom: 100px !important;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px 12px;
+    margin-bottom: 32px;
+    justify-items: center;
+}
+
+.action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.action-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    /* Soft Squircle */
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.action-circle:active {
+    transform: scale(0.9);
+    filter: brightness(0.9);
+}
+
+/* --- THE US NEOBANK PALETTE --- */
+.action-circle.purple {
+    background-color: #7F56D9;
+}
+
+/* Send - Standard Purple */
+.action-circle.green {
+    background-color: #00D632;
+    color: #fff;
+}
+
+/* Add Cash - Cash App Green */
+.action-circle.blue {
+    background-color: #0052CC;
+}
+
+/* Mobile - Corporate Blue */
+.action-circle.orange {
+    background-color: #FF8800;
+}
+
+/* Rewards - Vibrant Orange */
+.action-circle.yellow {
+    background-color: #FFC107;
+    color: #000;
+}
+
+/* Utilities - Warning Yellow */
+.action-circle.red {
+    background-color: #CD040B;
+}
+
+/* Internet - Verizon Red */
+.action-circle.cyan {
+    background-color: #06B6D4;
+    color: #fff;
+}
+
+/* Cards - Tech Blue */
+.action-circle.grey {
+    background-color: #2C2C2E;
+    border: 1px solid #3A3A3C;
+}

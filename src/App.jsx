@@ -3,6 +3,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {AuthProvider} from './Context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/Navbar/Navbar';
 
 import Login from './Pages/Auth/Login'
 import Register from './Pages/Auth/Register'
@@ -46,6 +47,7 @@ function App() {
           />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Navbar/>
         <ToastContainer />
       </Router>
     </AuthProvider>
