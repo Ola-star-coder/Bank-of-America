@@ -1,70 +1,115 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
-import { GoogleLogo, AppleLogo, FacebookLogo, Eye, EyeSlash } from 'phosphor-react';
+import { Eye, EyeSlash, CircleNotch, UserCircle, X } from 'phosphor-react';
+import { toast } from 'react-toastify';
 import './Auth.css'; 
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // Get googleSignIn from context
-  const { login, googleSignIn } = useAuth(); 
+  // State for "Smart Login"
+  const [returningUser, setReturningUser] = useState(null); // Stores { name, email } if found
+
+  const { login } = useAuth(); 
   const navigate = useNavigate();
 
-  // Handle standard Email/Password Login
+  // 1. Check for saved user on load
+  useEffect(() => {
+    const savedData = localStorage.getItem('last_user_data');
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      setReturningUser(parsed);
+      setEmail(parsed.email); // Pre-fill email logic
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
+
     try {
-      await login(email, password);
+      // 2. Perform Login
+      const userCredential = await login(email, password);
+      const user = userCredential.user;
+
+      // 3. Save User Data for NEXT time (The "Smart" part)
+      // We assume user.displayName is set. If not, fallback to email prefix.
+      const firstName = user.displayName ? user.displayName.split(' ')[0] : 'User';
+      
+      localStorage.setItem('last_user_data', JSON.stringify({
+        email: user.email,
+        name: firstName
+      }));
+
+      toast.success("Login Successful");
       navigate('/'); 
     } catch (err) {
-      setError('Failed to log in. Please check your details.');
+      console.error(err);
+      toast.error('Invalid credentials. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
 
-
-  const handleGoogleLogin = async () => {
-    try {
-      setError('');
-      await googleSignIn();
-      navigate('/');
-    } catch (err) {
-      console.error(err);
-      setError('Failed to login with Google.');
-    }
+  // Helper to switch to a different account
+  const handleSwitchAccount = () => {
+    localStorage.removeItem('last_user_data');
+    setReturningUser(null);
+    setEmail('');
+    setPassword('');
   };
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-logo">
-          <div className="logo-shape">BOA</div>
-        </div>
-
-        <h2>Login</h2>
-        <p className="auth-subtitle">Login to continue using the app</p>
-
-        {error && <div className="auth-error" style={{color: 'red', fontSize: '14px', marginBottom: '10px', textAlign: 'center'}}>{error}</div>}
+      <div className="auth-content">
+        
+        {/* HEADER LOGIC */}
+        <header className="auth-header">
+           {returningUser ? (
+             // RETURNING USER HEADER
+             <div className="welcome-back-header">
+               <div className="avatar-circle">
+                 <UserCircle size={48} weight="light" color="#2563EB" />
+               </div>
+               <h1>Welcome back, {returningUser.name}</h1>
+               <div className="using-email-tag">
+                 <span>Using {returningUser.email}</span>
+                 <button onClick={handleSwitchAccount} className="switch-btn">
+                   <X size={12} weight="bold"/> 
+                 </button>
+               </div>
+             </div>
+           ) : (
+             // STANDARD HEADER
+             <>
+               <Link to="/" className="back-arrow">←</Link>
+               <h1>Log in</h1>
+               <p>Securely access your global account.</p>
+             </>
+           )}
+        </header>
 
         <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label>Email</label>
-            <input 
-              type="email" 
-              placeholder="Enter your email address" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required 
-            />
-          </div>
+          
+          {/* Email Input - ONLY SHOW IF NOT RETURNING USER */}
+          {!returningUser && (
+            <div className="input-group">
+              <label>Email Address</label>
+              <input 
+                type="email" 
+                placeholder="name@example.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required 
+              />
+            </div>
+          )}
 
+          {/* Password Input - ALWAYS SHOW */}
           <div className="input-group">
             <label>Password</label>
             <div className="password-wrapper">
@@ -83,39 +128,23 @@ const Login = () => {
                 {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
               </button>
             </div>
-            <div className="forgot-password">
-              <Link to="/forgot-password">Forget password?</Link>
-            </div>
+          </div>
+
+          <div className="forgot-password-link">
+             <Link to="/forgot-password">Forgot password?</Link>
           </div>
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? <CircleNotch size={24} className="spinner-animate" /> : 'Log In'}
           </button>
         </form>
 
-        <div className="divider">Or Login with</div>
-
-        <div className="social-login">
-          <button className="social-btn" type="button">
-            <FacebookLogo size={24} weight="fill" color="#1877F2" />
-          </button>
-          
-          <button 
-            className="social-btn" 
-            type="button" 
-            onClick={handleGoogleLogin}
-          >
-            <GoogleLogo size={24} weight="bold" color="#EA4335" />
-          </button>
-          
-          <button className="social-btn" type="button">
-            <AppleLogo size={24} weight="fill" />
-          </button>
-        </div>
-
-        <p className="auth-footer">
-          Don't have an account? <Link to="/register">Register</Link>
-        </p>
+        {/* Footer Links */}
+        {!returningUser && (
+          <div className="login-prompt">
+              Don't have an account? <Link to="/register">Create one</Link>
+          </div>
+        )}
       </div>
     </div>
   );

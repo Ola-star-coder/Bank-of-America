@@ -1,39 +1,58 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../Context/AuthContext';
+import { doc, onSnapshot } from 'firebase/firestore'; 
+import { db } from '../../Firebase/config';
 import { 
   Eye, EyeSlash, PaperPlaneTilt, Wallet, 
-  CreditCard, SquaresFour, Bell, CaretDown 
+  CreditCard, SquaresFour, Bell 
 } from 'phosphor-react';
 import './Dashboard.css';
 
 const Home = () => {
   const { user } = useAuth();
   const [showBalance, setShowBalance] = useState(true);
-  const [accountNum, setAccountNum] = useState('Loading...');
+  
+  // 1. Initial State (Try to get name from local storage first for speed)
+  const [userData, setUserData] = useState(() => {
+    const saved = localStorage.getItem('last_user_data');
+    return {
+      balance: 0,
+      accountNumber: 'Loading...',
+      firstName: saved ? JSON.parse(saved).name : 'User'
+    };
+  });
 
-  const getFirstName = () => {
-    const rawName = user?.displayName || user?.email?.split('@')[0];
-    const nameNoNumbers = rawName.replace(/[0-9]/g, '');
-    if (!nameNoNumbers) return 'User'; 
-    return nameNoNumbers.charAt(0).toUpperCase() + nameNoNumbers.slice(1);
-  };
-
+  // 2. Fetch REAL Data from Firestore
   useEffect(() => {
-    const savedNum = localStorage.getItem(`acc_num_${user?.uid}`);
-    if (savedNum) {
-      setAccountNum(savedNum);
-    } else {
-      const newNum = '2' + Math.floor(Math.random() * 900000000 + 100000000).toString();
-      localStorage.setItem(`acc_num_${user?.uid}`, newNum);
-      setAccountNum(newNum);
-    }
+    if (!user) return;
+
+    // This listener updates AUTOMATICALLY if the database changes
+    const unsub = onSnapshot(doc(db, "users", user.uid), (doc) => {
+      if (doc.exists()) {
+        const data = doc.data();
+        setUserData({
+          balance: data.balance,
+          accountNumber: data.accountNumber,
+          firstName: data.fullName.split(' ')[0] // Get first name
+        });
+      }
+    });
+
+    return () => unsub();
   }, [user]);
 
- 
+  // Helper: Format Money (Adds commas and decimals)
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD', // You can change this to 'NGN' for Naira later if you want
+    }).format(amount);
+  };
+
+  // Dummy Transactions (We will replace these in Phase 2)
   const transactions = [
     { id: 1, title: 'Netflix Subscription', date: 'Today, 9:41 AM', amount: -4500, type: 'debit', icon: 'N' },
-    { id: 2, title: 'Janet Rollings', date: 'Yesterday, 4:20 PM', amount: 25000, type: 'credit', icon: 'J' },
-    { id: 3, title: 'Data Topup', date: 'Jan 28, 2026', amount: -1000, type: 'debit', icon: 'D' }
+    { id: 2, title: 'Welcome Bonus', date: 'Just now', amount: 1000, type: 'credit', icon: 'W' },
   ];
 
   return (
@@ -41,15 +60,12 @@ const Home = () => {
       <header className="dash-header">
         <div className="user-profile">
           <div className="profile-pic">
-            {user?.photoURL ? (
-              <img src={user.photoURL} alt="Profile" />
-            ) : (
-              <span>{getFirstName().charAt(0).toUpperCase()}</span>
-            )}
+             {/* Uses the first letter of their name */}
+             <span>{userData.firstName.charAt(0)}</span>
           </div>
           <div className="greeting">
             <span>Good Morning,</span>
-            <h3>{getFirstName()}</h3>
+            <h3>{userData.firstName}</h3>
           </div>
         </div>
         
@@ -70,7 +86,8 @@ const Home = () => {
         
         <div className="card-balance">
           <h1>
-            {showBalance ? `$12,500,000` : '$ ****'}
+            {/* 3. SHOW REAL BALANCE */}
+            {showBalance ? formatCurrency(userData.balance) : '****'}
           </h1>
           <button onClick={() => setShowBalance(!showBalance)} className="toggle-eye">
             {showBalance ? <Eye size={20} /> : <EyeSlash size={20} />}
@@ -80,7 +97,8 @@ const Home = () => {
         <div className="card-bottom">
           <div className="acc-details">
             <span>Account Number</span>
-            <p>{accountNum} <span className="copy-icon">❐</span></p>
+            {/* 4. SHOW REAL ACCOUNT NUMBER */}
+            <p>{userData.accountNumber} <span className="copy-icon">❐</span></p>
           </div>
           <div className="exp-date">
             <span>Exp</span>
@@ -108,7 +126,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* 4. TRANSACTION LIST */}
       <div className="transactions-section">
         <div className="section-header">
           <h4>Recent Transactions</h4>
@@ -135,5 +152,4 @@ const Home = () => {
     </div>
   );
 };
-
 export default Home;

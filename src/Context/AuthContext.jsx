@@ -53,7 +53,7 @@ export function AuthProvider({ children }) {
     user,
     signup,
     login,
-    googleSignIn, // <--- Exported here so pages can use it
+    googleSignIn, 
     logout,
     loading
   };

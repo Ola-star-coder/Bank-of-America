@@ -1,111 +1,219 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
-import { Eye, EyeSlash } from 'phosphor-react';
+import { db } from '../../Firebase/config';
+import { doc, setDoc } from 'firebase/firestore';
+import { updateProfile, sendEmailVerification } from 'firebase/auth';
+import { Eye, EyeSlash, CircleNotch, Check, CaretDown } from 'phosphor-react';
+import { toast } from 'react-toastify';
 import './Auth.css'; 
 
 const Register = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    countryCode: '+1', 
+    phone: '',
+    password: '',
+    confirmPassword: ''
+  });
+  
+  const [agreed, setAgreed] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
   const { signup } = useAuth(); 
   const navigate = useNavigate();
 
+  // List of targeted countries
+  const countries = [ 
+    { code: '+1',   flag: '🇺🇸', name: 'USA' }, // USA
+    { code: '+44',  flag: '🇬🇧', name: 'UK' },  // UK
+    { code: '+1',   flag: '🇨🇦', name: 'CAN' }, // Canada (Note: Same code as US, but distinct option)
+    { code: '+49',  flag: '🇩🇪', name: 'GER' }, // Germany
+    { code: '+33',  flag: '🇫🇷', name: 'FRA' }, // France
+    { code: '+234', flag: '🇳🇬', name: 'NG' }
+  ];
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // 1. Basic Validation
-    if (password !== confirmPassword) {
-      return setError("Passwords do not match");
-    }
+    if (!agreed) return toast.error("Please agree to the Terms & Conditions");
+    if (formData.password !== formData.confirmPassword) return toast.error("Passwords do not match");
 
     try {
-      setError('');
       setLoading(true);
-      // 2. Create the user in Firebase
-      await signup(email, password);
-      // 3. If successful, go to Dashboard
+      
+      // 1. Create User
+      const userCredential = await signup(formData.email, formData.password);
+      const user = userCredential.user;
+
+      // 2. Update Profile
+      await updateProfile(user, { displayName: formData.fullName });
+
+      // 3. Create Bank Data
+      const accountNumber = '30' + Math.floor(10000000 + Math.random() * 90000000).toString();
+
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        fullName: formData.fullName,
+        email: formData.email,
+        phoneNumber: `${formData.countryCode}${formData.phone}`,
+        country: formData.countryCode === '+1' ? 'USA' : 'International',
+        accountNumber: accountNumber,
+        balance: 1000.00,
+        isVerified: false,
+        createdAt: new Date().toISOString(),
+        transactions: [] 
+      });
+
+      // 4. FIXED: Force Update Local Storage immediately with the FORM DATA
+      // We use formData.fullName because it is 100% accurate right now.
+      localStorage.setItem('last_user_data', JSON.stringify({
+        email: formData.email,
+        name: formData.fullName.split(' ')[0] // Get first name "Dike" from "Dike Amaka"
+      }));
+
+      await sendEmailVerification(user);
+      
+      toast.success("Account created successfully!");
       navigate('/'); 
+      
     } catch (err) {
       console.error(err);
-      setError('Failed to create an account. Email might be in use.');
+      toast.error('Failed to create account.');
+    } finally {
       setLoading(false);
     }
   };
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-logo">
-           {/* You can use the same logo shape here */}
-           <div className="logo-shape"></div>
-        </div>
-
-        <h2>Create Account</h2>
-        <p className="auth-subtitle">Start managing your finances today</p>
-
-        {error && <div className="auth-error" style={{color: 'red', fontSize: '14px', textAlign: 'center'}}>{error}</div>}
+      <div className="auth-content">
+        <header className="auth-header">
+           <Link to="/login" className="back-arrow">←</Link>
+           <h1>Welcome!</h1>
+           <p>Let's get you started</p>
+        </header>
 
         <form onSubmit={handleSubmit}>
-          {/* Email Input */}
+          {/* Name */}
           <div className="input-group">
-            <label>Email</label>
+            <label>Legal Name</label>
             <input 
-              type="email" 
-              placeholder="Enter your email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text" 
+              name="fullName"
+              placeholder="e.g. John Doe" 
+              value={formData.fullName}
+              onChange={handleChange}
               required 
             />
           </div>
 
-          {/* Password Input */}
+          {/* Email */}
+          <div className="input-group">
+            <label>Email Address</label>
+            <input 
+              type="email" 
+              name="email"
+              placeholder="name@example.com" 
+              value={formData.email}
+              onChange={handleChange}
+              required 
+            />
+          </div>
+
+          {/* New Country Selector Logic */}
+          <div className="input-group">
+            <label>Phone Number</label>
+            <div className="phone-input-wrapper">
+              
+              {/* The Country Dropdown */}
+              <div className="country-select-container">
+                <select 
+                  name="countryCode" 
+                  value={formData.countryCode} 
+                  onChange={handleChange}
+                  className="country-select"
+                >
+                  {countries.map((c, index) => (
+                    <option key={index} value={c.code}>
+                      {c.flag} {c.code}
+                    </option>
+                  ))}
+                </select>
+                <CaretDown size={14} className="select-caret"/>
+              </div>
+
+              <input 
+                type="tel" 
+                name="phone"
+                placeholder="812 345 6789" 
+                value={formData.phone}
+                onChange={handleChange}
+                required 
+              />
+            </div>
+          </div>
+
+          {/* Password */}
           <div className="input-group">
             <label>Password</label>
             <div className="password-wrapper">
               <input 
                 type={showPassword ? "text" : "password"} 
-                placeholder="Create a password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
+                placeholder="Minimum 6 characters"
+                value={formData.password}
+                onChange={handleChange}
                 required 
               />
-              <button 
-                type="button" 
-                className="eye-icon"
-                onClick={() => setShowPassword(!showPassword)}
-              >
+              <button type="button" className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>
 
-          {/* Confirm Password Input */}
+          {/* Confirm Password */}
           <div className="input-group">
             <label>Confirm Password</label>
             <div className="password-wrapper">
               <input 
                 type={showPassword ? "text" : "password"} 
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                name="confirmPassword"
+                placeholder="Confirm password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 required 
               />
             </div>
           </div>
 
+          {/* Terms */}
+          <div className="terms-container">
+             <div 
+               className={`checkbox ${agreed ? 'checked' : ''}`} 
+               onClick={() => setAgreed(!agreed)}
+             >
+               {agreed && <Check size={14} color="white" weight="bold"/>}
+             </div>
+             <p>
+               I agree to the <a href="#">Terms of Service</a> and <a href="#">Global Privacy Policy</a>.
+             </p>
+          </div>
+
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Register'}
+            {loading ? <CircleNotch size={24} className="spinner-animate" /> : 'Create Account'}
           </button>
         </form>
-
-        <p className="auth-footer" style={{marginTop: '20px'}}>
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
+        
+        <div className="login-prompt">
+            Already have an account? <Link to="/login">Log in</Link>
+        </div>
       </div>
     </div>
   );
