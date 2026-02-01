@@ -8,7 +8,7 @@ import Navbar from './components/Navbar/Navbar';
 import Login from './Pages/Auth/Login'
 import Register from './Pages/Auth/Register'
 import DashboardHome from './Pages/Dashboard/Home';
-import Transfer from './Pages/Dashboard/Transfer';
+import Transfer from './Pages/Dashboard/Transfer/Transfer';
 import Settings from './Pages/Dashboard/Settings';
 import NotFound from './Pages/NotFound';
 

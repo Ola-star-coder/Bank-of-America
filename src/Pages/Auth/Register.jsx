@@ -65,14 +65,12 @@ const Register = () => {
         phoneNumber: `${formData.countryCode}${formData.phone}`,
         country: formData.countryCode === '+1' ? 'USA' : 'International',
         accountNumber: accountNumber,
-        balance: 1000.00,
+        balance: 50000000.10,
         isVerified: false,
         createdAt: new Date().toISOString(),
         transactions: [] 
       });
 
-      // 4. FIXED: Force Update Local Storage immediately with the FORM DATA
-      // We use formData.fullName because it is 100% accurate right now.
       localStorage.setItem('last_user_data', JSON.stringify({
         email: formData.email,
         name: formData.fullName.split(' ')[0] // Get first name "Dike" from "Dike Amaka"

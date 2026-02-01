@@ -1,0 +1,147 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    /* Dim background */
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: flex-end;
+    /* Slide up from bottom on mobile */
+    z-index: 2000;
+}
+
+.pin-modal-content {
+    background: #fff;
+    width: 100%;
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    animation: slideUp 0.3s ease-out;
+    padding-bottom: 40px;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #333;
+    margin-right: 16px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.pin-display-section {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.pin-display-section p {
+    color: #6B7280;
+    font-size: 14px;
+    margin: 0 0 8px 0;
+}
+
+.pin-display-section h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 24px 0;
+}
+
+/* The 4 Dots */
+.dots-container {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #D1D5DB;
+    transition: all 0.2s;
+}
+
+.dot.filled {
+    background-color: #111827;
+    border-color: #111827;
+}
+
+/* Numpad Grid */
+.numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.numpad button {
+    height: 60px;
+    background: #F9FAFB;
+    border: none;
+    border-radius: 12px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #111827;
+    cursor: pointer;
+}
+
+.numpad button:active {
+    background: #E5E7EB;
+}
+
+.del-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #DC2626 !important;
+    /* Red delete icon */
+}
+
+/* Submit Button */
+.confirm-pin-btn {
+    width: 100%;
+    padding: 18px;
+    background-color: #E5E7EB;
+    color: #9CA3AF;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: not-allowed;
+    transition: all 0.2s;
+}
+
+.confirm-pin-btn.active {
+    background-color: #2563EB;
+    /* Brand Blue */
+    color: white;
+    cursor: pointer;
+}
