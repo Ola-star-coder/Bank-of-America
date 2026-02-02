@@ -2,7 +2,7 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
+  text-align: left;
 }
 
 .logo {
@@ -11,9 +11,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -22,6 +24,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -39,4 +42,57 @@
 
 .read-the-docs {
   color: #888;
+}
+
+
+/* --- SMOOTH ANIMATION ENGINE --- */
+
+/* 1. Prevent the "Jumpy Scrollbar" issue */
+body,
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* 2. Defined Animations */
+
+/* "Enter from Right" - Like opening a new page on iPhone */
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+    /* Starts slightly to the right */
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* "Fade Up" - Like opening a modal or app */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: scale(0.98) translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 3. Utility Classes */
+
+.page-slide {
+  /* GPU Acceleration */
+  will-change: transform, opacity;
+  /* The "Apple" Curve - Starts fast, slows down gently */
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.page-fade {
+  will-change: transform, opacity;
+  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

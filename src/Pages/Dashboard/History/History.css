@@ -1,0 +1,203 @@
+/* --- PAGE LAYOUT --- */
+.history-container {
+    min-height: 100vh;
+    background-color: #F3F4F6;
+    /* Clean Light Gray */
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+    padding-bottom: 80px;
+    /* Space for bottom scroll */
+}
+
+/* --- STICKY HEADER SECTION --- */
+/* This makes the Search & Filter stick to the top */
+.history-controls {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(243, 244, 246, 0.95);
+    /* Semi-transparent background */
+    backdrop-filter: blur(10px);
+    /* Frosted Glass Effect */
+    margin: -20px -20px 20px -20px;
+    /* Stretch to edges */
+    padding: 20px 20px 10px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Search Bar */
+.search-bar-wrapper {
+    background: white;
+    border-radius: 14px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    margin-bottom: 16px;
+    border: 1px solid #E5E7EB;
+    transition: border-color 0.2s;
+}
+
+.search-bar-wrapper:focus-within {
+    border-color: #0E648E;
+    /* Blue border when typing */
+}
+
+.search-bar-wrapper input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 15px;
+    color: #1F2937;
+    background: transparent;
+    font-weight: 500;
+}
+
+.search-bar-wrapper input::placeholder {
+    color: #9CA3AF;
+}
+
+/* Filter Chips (Scrollable Row) */
+.filter-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.filter-row::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-chip {
+    padding: 8px 24px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    background: #E5E7EB;
+    color: #6B7280;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.filter-chip:active {
+    transform: scale(0.95);
+}
+
+.filter-chip.active {
+    background: #0E648E;
+    /* Brand Blue */
+    color: white;
+    box-shadow: 0 4px 12px rgba(14, 100, 142, 0.3);
+}
+
+/* --- TRANSACTION LIST --- */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* The Transaction Card */
+.t-item {
+    background: white;
+    padding: 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    border: 1px solid #F3F4F6;
+    transition: transform 0.1s;
+}
+
+.t-item:active {
+    transform: scale(0.98);
+}
+
+/* Avatars */
+.t-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.t-avatar.credit {
+    background-color: #ECFDF5;
+    /* Light Green Bg */
+    color: #059669;
+    /* Green Icon */
+}
+
+.t-avatar.debit {
+    background-color: #F3F4F6;
+    /* Light Gray Bg */
+    color: #4B5563;
+    /* Dark Gray Icon */
+}
+
+/* Text Info */
+.t-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.t-info h5 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1F2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.t-info span {
+    font-size: 12px;
+    color: #9CA3AF;
+    font-weight: 500;
+}
+
+/* Amounts */
+.t-amount {
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.t-amount.credit {
+    color: #059669;
+    /* Success Green */
+}
+
+.t-amount.debit {
+    color: #1F2937;
+}
+
+/* Empty State */
+.empty-history {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9CA3AF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}

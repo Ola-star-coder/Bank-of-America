@@ -1,0 +1,197 @@
+/* --- CAROUSEL CONTAINER --- */
+.carousel-wrapper {
+    width: 100%;
+    margin-bottom: 12px;
+    /* Reduced outer margin because padding handles space now */
+    position: relative;
+    /* Optional: Negative margin to let cards touch screen edges on mobile */
+    margin-left: -20px;
+    width: calc(100% + 40px);
+}
+
+.cards-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+
+    /* THE FIX: More padding on all sides so shadows don't get cut off */
+    padding: 20px 20px 40px 20px;
+
+    /* Hide Scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.cards-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- THE CARD BASE --- */
+.bank-card {
+    min-width: calc(100% - 10px);
+    /* Slightly smaller than full width so you see a peek of next card */
+    height: 220px;
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
+    scroll-snap-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+/* --- CARD THEMES --- */
+
+/* 1. ROYAL BLUE (Main) */
+.card-theme-blue {
+    background: linear-gradient(110deg, #0E648E 0%, #1e4b66 100%);
+    /* Shadow Fix: Stronger, more diffuse shadow */
+    box-shadow: 0 15px 35px -5px rgba(14, 100, 142, 0.5);
+}
+
+.card-theme-blue::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+}
+
+/* 2. STEALTH BLACK (Virtual) */
+.card-theme-black {
+    background: linear-gradient(135deg, #1C1C1E 0%, #000000 100%);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
+    border: 1px solid #333;
+}
+
+.card-theme-black::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.3;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* 3. PREMIUM GOLD (Visa Gold) */
+.card-theme-gold {
+    background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+    box-shadow: 0 15px 35px -5px rgba(184, 134, 11, 0.5);
+}
+
+.card-theme-gold::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-25deg);
+    pointer-events: none;
+}
+
+/* --- CARD CONTENT --- */
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 2;
+}
+
+.card-brand {
+    font-size: 16px;
+    font-weight: 700;
+    font-style: italic;
+    opacity: 0.9;
+    letter-spacing: 1px;
+}
+
+.card-balance-wrapper {
+    z-index: 2;
+}
+
+.balance-label {
+    font-size: 12px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.balance-amount {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.eye-btn-card {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+}
+
+.card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    z-index: 2;
+}
+
+.card-digits {
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    letter-spacing: 2px;
+    opacity: 0.9;
+}
+
+.card-expiry {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* --- DOTS --- */
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: -30px;
+    position: relative;
+    z-index: 10;
+    padding-bottom: 20px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #D1D5DB;
+    transition: all 0.3s;
+    border: none;
+}
+
+.dot.active {
+    width: 24px;
+    border-radius: 12px;
+    background-color: #0E648E;
+}

@@ -1,0 +1,123 @@
+/* --- CONTAINER --- */
+.widgets-wrapper {
+    margin-bottom: 24px;
+    /* Tighter spacing */
+}
+
+.widgets-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B7280;
+    /* Softer Grey Label */
+    margin-bottom: 12px;
+    padding-left: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.widgets-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 10px;
+
+    /* Hide Scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.widgets-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- WIDGET BASE (The Long Rectangle) --- */
+.widget-card {
+    min-width: 260px;
+    /* Wide Banner */
+    height: 80px;
+    /* Short height */
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    /* Center vertically */
+    gap: 16px;
+    /* Space between icon and text */
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Subtle border */
+}
+
+.widget-card:active {
+    transform: scale(0.98);
+}
+
+/* --- THEME 1: REFERRAL (Purple/Pink Gradient) --- */
+.widget-referral {
+    background: linear-gradient(90deg, #667EEA 0%, #764BA2 100%);
+    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+}
+
+/* --- THEME 2: ANALYTICS (Dark Tech) --- */
+.widget-analytics {
+    background: #1F2937;
+    /* Dark Grey */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid #374151;
+}
+
+/* --- THEME 3: CASHBACK (Brand Blue) --- */
+.widget-cashback {
+    background: linear-gradient(90deg, #0E648E 0%, #0284c7 100%);
+    box-shadow: 0 4px 15px rgba(14, 100, 142, 0.3);
+}
+
+/* --- CONTENT STYLING --- */
+.widget-icon-box {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    flex-shrink: 0;
+    /* Prevent icon from squishing */
+}
+
+.widget-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.widget-text h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.widget-text p {
+    margin: 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+/* Decorative Circle (Subtle background art) */
+.widget-decor-circle {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    pointer-events: none;
+}

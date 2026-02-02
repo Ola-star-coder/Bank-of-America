@@ -1,14 +1,34 @@
-/* --- GLOBAL LAYOUT --- */
+/* =========================================
+   GLOBAL LAYOUT & ANIMATIONS
+   ========================================= */
 .transfer-container {
     min-height: 100vh;
     background-color: #F2F2F7;
-    /* Apple System Gray */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    padding: 20px;
+    /* Light Gray Background */
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 24px;
     padding-bottom: 100px;
     overflow-x: hidden;
 }
 
+/* Spinner Fix - MOVED TO TOP */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    transform-origin: center;
+}
+
+/* Header */
 .transfer-header {
     display: flex;
     align-items: center;
@@ -29,6 +49,7 @@
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s;
+    color: #1C1C1E;
 }
 
 .back-btn:active {
@@ -37,106 +58,132 @@
 
 .transfer-header h2 {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     color: #1C1C1E;
     margin: 0;
 }
 
-/* --- ANIMATIONS --- */
-.animate-slide-up {
-    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+/* =========================================
+   INPUT STYLES
+   ========================================= */
+
+/* Amount Input */
+.amount-section-clean {
+    margin-bottom: 24px;
+    text-align: center;
 }
 
-.animate-fade-in {
-    animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-/* --- STEP 1: INPUT STYLES --- */
-.input-group label {
+.amount-label {
+    display: block;
     font-size: 13px;
     font-weight: 600;
     color: #8E8E93;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 8px;
-    display: block;
+    text-align: left;
     margin-left: 4px;
 }
 
-.search-box {
-    position: relative;
-    background: #FFFFFF;
-    border-radius: 16px;
-    padding: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
-.search-box input {
-    width: 100%;
-    padding: 16px;
-    border: none;
-    background: transparent;
-    font-size: 17px;
-    font-weight: 500;
-    outline: none;
-    color: #1C1C1E;
-}
-
-.verify-btn-mini {
-    position: absolute;
-    right: 8px;
-    top: 8px;
-    bottom: 8px;
-    width: 40px;
-    background: #007AFF;
-    /* iOS Blue */
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+.amount-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+.currency-symbol {
+    font-size: 40px;
+    font-weight: 600;
+    color: #1C1C1E;
+    margin-top: 6px;
+    margin-right: 4px;
+}
+
+.clean-amount-input {
+    background: transparent;
+    border: none;
+    font-size: 56px;
+    font-weight: 700;
+    color: #1C1C1E;
+    width: 240px;
+    text-align: left;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+    caret-color: #0E648E;
+    /* Blue cursor */
+}
+
+/* Hide Arrows */
+.clean-amount-input::-webkit-outer-spin-button,
+.clean-amount-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Input Cards (Recipient, Note) */
+.input-group-card {
+    background: white;
+    border-radius: 16px;
+    padding: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    border: 1px solid #E5E5EA;
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    transition: border 0.2s;
+}
+
+.input-group-card:focus-within {
+    border-color: #0E648E;
+}
+
+.input-icon {
+    margin-left: 12px;
+    color: #9CA3AF;
+}
+
+.input-group-card input {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1F2937;
+    outline: none;
+    background: transparent;
+}
+
+.verify-btn-mini {
+    width: 50px;
+    height: 40px;
+    background: #0E648E;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    outline: none;
+}
+
 /* User Found Card */
 .user-found-card {
-    margin-top: 12px;
-    background: #E8F5E9;
-    /* Light Green */
-    border: 1px solid #C8E6C9;
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
     padding: 12px 16px;
-    border-radius: 14px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-bottom: 24px;
+    cursor: pointer;
 }
 
 .avatar-circle {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     background: #10B981;
     color: white;
     border-radius: 50%;
@@ -144,116 +191,108 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 16px;
+    flex-shrink: 0;
 }
 
 .user-details h4 {
     margin: 0;
     font-size: 15px;
-    color: #065F46;
+    color: #1F2937;
+    font-weight: 600;
 }
 
 .user-details span {
     font-size: 12px;
-    color: #10B981;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-/* AMOUNT BOX (The "Cash App" Look) */
-.amount-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 0;
-}
-
-.amount-box span {
-    font-size: 32px;
-    font-weight: 600;
-    color: #1C1C1E;
-    margin-top: 8px;
-}
-
-.amount-box input {
-    border: none;
-    background: transparent;
-    font-size: 56px;
-    /* HUGE TEXT */
-    font-weight: 800;
-    color: #1C1C1E;
-    width: 200px;
-    text-align: center;
-    outline: none;
-}
-
-.amount-box input::placeholder {
-    color: #D1D1D6;
+    color: #15803D;
+    display: block;
+    margin-top: 2px;
 }
 
 /* Beneficiaries */
-.beneficiaries-section {
-    margin-top: 32px;
+.ben-section-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8E8E93;
+    margin-bottom: 12px;
+    display: block;
+    margin-left: 4px;
 }
 
-.b-row {
+.ben-list-wrapper {
     display: flex;
-    gap: 16px;
     overflow-x: auto;
-    padding: 4px;
-    padding-bottom: 12px;
+    gap: 16px;
+    padding-bottom: 10px;
+    scrollbar-width: none;
 }
 
-.b-item {
+.ben-list-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.ben-card {
+    min-width: 72px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    min-width: 60px;
 }
 
-.b-avatar {
+.ben-avatar {
     width: 56px;
     height: 56px;
-    border-radius: 50%;
-    background: #FFFFFF;
+    border-radius: 18px;
+    background: white;
+    border: 1px solid #E5E5EA;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
-    color: #1C1C1E;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    border: 2px solid transparent;
+    color: #374151;
     transition: all 0.2s;
 }
 
-.b-item:hover .b-avatar {
-    border-color: #007AFF;
-    transform: translateY(-2px);
+.ben-card:hover .ben-avatar {
+    border-color: #0E648E;
+    color: #0E648E;
 }
 
-.b-item span {
+.ben-name {
     font-size: 12px;
-    color: #1C1C1E;
-    font-weight: 500;
+    color: #4B5563;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.add-new span {
-    font-size: 24px;
-    color: #007AFF;
-    background: #EBF5FF;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Buttons */
+.main-btn {
+    width: 100%;
+    background: #1C1C1E;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 18px;
+    border: none;
+    border-radius: 16px;
+    margin-top: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
 }
 
-/* --- STEP 2: REVIEW STYLES --- */
+.main-btn:active {
+    transform: scale(0.98);
+}
+
+/* =========================================
+    REVIEW CARD (Fixing Contrast)
+   ========================================= */
 .review-card {
     background: white;
     border-radius: 24px;
@@ -265,51 +304,55 @@
     overflow: hidden;
 }
 
-/* The "Ticket" effect circles */
+/* Circles Cutout */
 .review-card::before,
 .review-card::after {
     content: '';
     position: absolute;
-    bottom: 80px;
-    width: 20px;
-    height: 20px;
+    bottom: 85px;
+    width: 24px;
+    height: 24px;
     background-color: #F2F2F7;
-    /* Matches background */
+    /* Matches Page BG */
     border-radius: 50%;
+    z-index: 10;
 }
 
 .review-card::before {
-    left: -10px;
+    left: -12px;
 }
 
 .review-card::after {
-    right: -10px;
+    right: -12px;
 }
 
 .review-label {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
-    color: #8E8E93;
+    color: #9CA3AF;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .review-amount {
     font-size: 42px;
-    font-weight: 800;
-    color: #1C1C1E;
+    font-weight: 700;
+    color: #111827;
     margin: 8px 0;
+    letter-spacing: -1px;
 }
 
 .review-badge {
     display: inline-block;
-    background: #E8F5E9;
-    color: #10B981;
+    background: #DCFCE7;
+    color: #166534;
     font-size: 12px;
     font-weight: 700;
     padding: 4px 12px;
     border-radius: 20px;
 }
 
+/* Review Details List */
 .review-details {
     background: white;
     border-radius: 20px;
@@ -322,7 +365,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    border-bottom: 1px solid #F2F2F7;
+    border-bottom: 1px solid #F3F4F6;
 }
 
 .detail-row:last-child {
@@ -330,34 +373,70 @@
 }
 
 .detail-row span:first-child {
-    color: #8E8E93;
-    font-size: 15px;
+    color: #6B7280;
+    font-size: 14px;
 }
 
 .detail-row span:last-child {
-    color: #1C1C1E;
+    color: #111827;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
 }
 
-.recipient-mini {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.mini-avatar {
-    width: 24px;
+/* Toggle */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
     height: 24px;
-    background: #007AFF;
-    color: white;
-    font-size: 10px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #E5E7EB;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input:checked+.slider {
+    background-color: #0E648E;
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+/* Confirm Button */
+.confirm-btn {
+    background: #0E648E;
+    box-shadow: 0 4px 15px rgba(14, 100, 142, 0.3);
+}
+
+/* Security Note */
 .security-note {
     display: flex;
     align-items: center;
@@ -371,46 +450,40 @@
     color: #6B7280;
 }
 
-/* --- BUTTONS --- */
-.main-btn {
-    width: 100%;
-    background: #1C1C1E;
-    /* Midnight Black */
+.recipient-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mini-avatar {
+    width: 24px;
+    height: 24px;
+    background: #0E648E;
     color: white;
-    font-size: 16px;
-    font-weight: 600;
-    padding: 18px;
-    border: none;
-    border-radius: 16px;
-    margin-top: 16px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s, background 0.2s;
+    font-size: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
 }
 
-.main-btn:active {
-    transform: scale(0.98);
-}
-
-.confirm-btn {
-    background: #007AFF;
-    /* Pro Blue for Confirmation */
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
-}
-
-/* --- STEP 3: SUCCESS STYLES --- */
+/* =========================================
+   SUCCESS
+   ========================================= */
 .success-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 80vh;
+    height: 70vh;
     text-align: center;
 }
 
 .success-icon-wrapper {
     margin-bottom: 24px;
-    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: popIn 0.5s;
 }
 
 @keyframes popIn {
@@ -424,17 +497,16 @@
 }
 
 .success-container h2 {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
-    color: #1C1C1E;
+    color: #111827;
     margin-bottom: 8px;
 }
 
 .success-container p {
-    font-size: 16px;
+    font-size: 15px;
     color: #6B7280;
     margin-bottom: 40px;
-    max-width: 280px;
     line-height: 1.5;
 }
 
@@ -448,26 +520,10 @@
 .secondary-btn {
     width: 100%;
     background: transparent;
-    color: #007AFF;
+    color: #0E648E;
     font-size: 16px;
     font-weight: 600;
     padding: 16px;
     border: none;
     cursor: pointer;
-}
-
-.spin {
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    /* Ensures it can rotate */
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
 }

@@ -90,7 +90,7 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-container page-fade">
       <div className="auth-content">
         <header className="auth-header">
            <Link to="/login" className="back-arrow">←</Link>

@@ -31,7 +31,7 @@ const Transfer = () => {
   };
 
   return (
-    <div className="transfer-container">
+    <div className="transfer-container page-slide">
       {/* Header (Hidden on Success Step for cleaner look) */}
       {currentStep !== 2 && (
         <header className="transfer-header">

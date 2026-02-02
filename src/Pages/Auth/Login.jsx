@@ -64,7 +64,7 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-container page-fade">
       <div className="auth-content">
         
         {/* HEADER LOGIC */}

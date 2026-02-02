@@ -1,0 +1,87 @@
+/* --- OVERLAY BACKDROP --- */
+.sheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards;
+    transition: opacity 0.3s ease;
+    /* For smooth closing fade */
+}
+
+/* --- THE SHEET ITSELF --- */
+.sheet-content {
+    background-color: white;
+    width: 100%;
+    max-height: 85vh;
+    border-radius: 32px 32px 0 0;
+    padding: 24px;
+    padding-bottom: 40px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+
+    /* Animation Basics */
+    transform: translateY(100%);
+    animation: slideUpSheet 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    position: relative;
+
+    /* Important for Dragging */
+    touch-action: pan-y;
+    /* Allow vertical scrolling */
+    transition: transform 0.1s linear;
+    /* Default for dragging responsiveness */
+}
+
+/* When we let go and it snaps back, use a bouncy transition */
+.sheet-content.snapping {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- DRAG HANDLE --- */
+.sheet-handle-bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    padding-top: 8px;
+    /* Bigger hit area */
+    cursor: grab;
+}
+
+.sheet-handle {
+    width: 48px;
+    height: 6px;
+    background-color: #E5E7EB;
+    border-radius: 100px;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpSheet {
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Closing State (Applied via React) */
+.sheet-overlay.closing {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sheet-content.closing {
+    transform: translateY(100%) !important;
+    /* Force it down */
+    transition: transform 0.3s ease-in;
+}

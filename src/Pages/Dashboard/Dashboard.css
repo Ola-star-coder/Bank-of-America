@@ -31,7 +31,6 @@
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    /* Soft square looks more modern */
     background-color: #2C2C2E;
     overflow: hidden;
     display: flex;
@@ -40,6 +39,7 @@
     border: 1px solid #3A3A3C;
     color: #fff;
     font-weight: 600;
+    text-transform: capitalize;
 }
 
 .profile-pic img {
@@ -49,26 +49,25 @@
 }
 
 .greeting span {
-    font-size: 11px;
+    font-size: 14px;
     color: #8E8E93;
-    /* Apple-style grey */
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .greeting h3 {
     margin: 0;
-    font-size: 16px;
+    font-size: 19px;
     font-weight: 600;
     color: #FFFFFF;
+    text-transform: capitalize;
 }
 
 .notif-btn {
     background: #1C1C1E;
-    /* Lighter than background */
     border: 1px solid #2C2C2E;
-    width: 36px;
-    height: 36px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     color: #fff;
     display: flex;
