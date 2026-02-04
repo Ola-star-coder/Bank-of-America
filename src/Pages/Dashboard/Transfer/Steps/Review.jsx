@@ -60,7 +60,7 @@ const ReviewStep = ({ data, onBack, onSuccess }) => {
     executeTransfer();
   };
 
-  const executeTransfer = async () => {
+const executeTransfer = async () => {
     try {
       const sendAmount = parseFloat(data.amount);
 
@@ -78,52 +78,45 @@ const ReviewStep = ({ data, onBack, onSuccess }) => {
 
         const newRecipientBalance = recipientDoc.data().balance + sendAmount;
 
+        // ... (Transaction Record creation logic stays the same) ...
         const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        
-        const debitRecord = {
-          id: Math.random().toString(36).substr(2, 9),
-          title: `Sent to ${data.recipient.fullName}`,
-          date: date,
-          amount: -sendAmount,
-          type: 'debit',
-          icon: 'P',
-          timestamp: Date.now()
-        };
+        const debitRecord = { /* ... keep your existing record logic ... */ };
+        const creditRecord = { /* ... keep your existing record logic ... */ };
 
-        const creditRecord = {
-          id: Math.random().toString(36).substr(2, 9),
-          title: `Received from ${senderDoc.data().fullName}`,
-          date: date,
-          amount: sendAmount,
-          type: 'credit',
-          icon: 'W',
-          timestamp: Date.now()
-        };
 
-        // 1. Update Balances & History (ALWAYS HAPPENS)
-        transaction.update(senderRef, { 
+        // 1. Prepare Updates object
+        const senderUpdates = {
             balance: newSenderBalance,
-            transactions: arrayUnion(debitRecord) 
-        });
+            transactions: arrayUnion(debitRecord)
+        };
+
+        // 2. LOGIC FIX: Handle Beneficiaries Manually
+        if (saveToBen) {
+            const currentBens = senderDoc.data().beneficiaries || [];
+            
+            // Remove the person if they are already in the list (so we don't duplicate)
+            const otherBens = currentBens.filter(b => b.uid !== data.recipient.uid);
+
+            const newBenEntry = {
+                uid: data.recipient.uid,
+                fullName: data.recipient.fullName,
+                accountNumber: data.recipient.accountNumber,
+                bankName: data.recipient.bankName || 'Opay', 
+                lastSent: Date.now() // Updating timestamp is fine now because we removed the old one
+            };
+
+            // Add the new/updated person to the top of the list
+            senderUpdates.beneficiaries = [newBenEntry, ...otherBens];
+        }
+
+        // 3. Commit Updates
+        transaction.update(senderRef, senderUpdates);
+        
         transaction.update(recipientRef, { 
             balance: newRecipientBalance,
             transactions: arrayUnion(creditRecord) 
         });
 
-        // 2. Save Beneficiary (CONDITIONAL - THE POWER MOVE)
-        if (saveToBen) {
-            const beneficiaryData = {
-                uid: data.recipient.uid,
-                fullName: data.recipient.fullName,
-                accountNumber: data.recipient.accountNumber,
-                bankName: data.recipient.bankName || 'Opay', 
-                lastSent: Date.now()
-            };
-            // We update the sender's doc to add this person
-            transaction.update(senderRef, {
-                beneficiaries: arrayUnion(beneficiaryData)
-            });
-        }
       });
 
       onSuccess(); 

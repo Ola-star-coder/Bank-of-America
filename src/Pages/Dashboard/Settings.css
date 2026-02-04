@@ -1,0 +1,238 @@
+/* src/Pages/Dashboard/Settings.css */
+
+.settings-container {
+    background-color: #F8F9FA;
+    min-height: 100vh;
+    padding-bottom: 120px;
+    /* Space for Navbar */
+}
+
+/* --- ZONE 1: IDENTITY CARD --- */
+.identity-header {
+    background: linear-gradient(135deg, #0E648E 0%, #0284C7 100%);
+    padding: 30px 24px 80px 24px;
+    /* Extra bottom padding for overlap */
+    border-radius: 0 0 32px 32px;
+    color: white;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(14, 100, 142, 0.3);
+}
+
+.settings-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.nav-icon-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    backdrop-filter: blur(4px);
+}
+
+.profile-avatar-large {
+    width: 80px;
+    height: 80px;
+    background: white;
+    color: #0E648E;
+    font-size: 32px;
+    font-weight: 700;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.edit-badge {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    background: #10B981;
+    /* Green */
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #0E648E;
+    /* Match bg to fake transparent border */
+    font-size: 14px;
+}
+
+.user-name-large {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+}
+
+.user-email-small {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* --- ZONE 2: ACCOUNT DETAILS (Floating Card) --- */
+.account-details-card {
+    background: white;
+    margin: -50px 24px 24px 24px;
+    /* Pulls UP over the blue header */
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+}
+
+.acc-info-block label {
+    display: block;
+    font-size: 11px;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.acc-info-block h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #1F2937;
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+.copy-btn {
+    background: #F3F4F6;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    color: #0E648E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* --- ZONE 3: PREFERENCES LIST --- */
+.settings-section {
+    padding: 0 24px;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B7280;
+    margin: 0 0 12px 8px;
+    text-transform: uppercase;
+}
+
+.settings-group {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    /* For rounded corners on first/last items */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #F3F4F6;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-row:active {
+    background: #F9FAFB;
+}
+
+.row-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #F3F4F6;
+    color: #4B5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+}
+
+/* Specific Colors for Icons */
+.row-icon.blue {
+    background: #E0F2FE;
+    color: #0284C7;
+}
+
+.row-icon.purple {
+    background: #F3E8FF;
+    color: #9333EA;
+}
+
+.row-icon.green {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.row-icon.orange {
+    background: #FFEDD5;
+    color: #EA580C;
+}
+
+.row-label {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1F2937;
+}
+
+.row-action {
+    color: #9CA3AF;
+}
+
+/* --- ZONE 4: LOGOUT --- */
+.logout-btn {
+    background: #FEE2E2;
+    color: #DC2626;
+    width: calc(100% - 48px);
+    margin: 0 24px;
+    padding: 16px;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.version-text {
+    text-align: center;
+    font-size: 12px;
+    color: #D1D5DB;
+    margin-top: 24px;
+}

@@ -1,0 +1,740 @@
+/* src/Pages/Cards/Cards.css */
+
+/* --- PAGE LAYOUT --- */
+.cards-page-container {
+    background-color: #F8F9FA;
+    min-height: 100vh;
+    padding-bottom: 120px;
+    /* Space for Navbar */
+    overflow-x: hidden;
+    /* Prevent horizontal page scroll */
+    font-family: 'Inter', sans-serif;
+}
+
+/* Header */
+.cards-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 10px 24px;
+}
+
+.cards-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #111827;
+}
+
+.back-btn-glass {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: white;
+    border: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* --- CAROUSEL CONTAINER --- */
+.cards-carousel-container {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 24px;
+    padding-bottom: 50px;
+    /* Extra space for shadows */
+    scrollbar-width: none;
+}
+
+.cards-carousel-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Wrapper for each card slide */
+.card-slide {
+    min-width: 100%;
+    scroll-snap-align: center;
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+    /* ALIGNMENT FIX: Centers card in slide */
+}
+
+/* --- CARD VISUALS (THE SKINS) --- */
+
+/* Base Card Structure */
+.silver-card,
+.black-card,
+.gold-card,
+.blue-card,
+.green-card,
+.purple-card,
+.red-card,
+.centurion-card {
+    height: 220px;
+    width: 100%;
+    max-width: 360px;
+    /* Prevents card from getting too wide on desktop */
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* 1. SILVER (Standard) */
+.silver-card {
+    background: linear-gradient(135deg, #E2E2E2 0%, #F3F4F6 40%, #D1D5DB 100%);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.silver-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.4) 50%, transparent 60%);
+    pointer-events: none;
+}
+
+/* 2. BLACK (Elite) */
+.black-card {
+    background: #121212;
+    background-image: radial-gradient(circle at 100% 0%, #333 0%, transparent 30%);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4);
+    border: 1px solid #333;
+}
+
+/* 3. GOLD (Premium) */
+.gold-card {
+    background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+    box-shadow: 0 15px 35px -5px rgba(245, 158, 11, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* 4. CENTURION (Titanium) */
+.centurion-card {
+    background: linear-gradient(135deg, #434343 0%, #000000 100%);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.7);
+    border: 1px solid #555;
+}
+
+.centurion-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* 5. VIBRANT COLORS */
+.blue-card {
+    background: linear-gradient(135deg, #0062CC 0%, #003366 100%);
+    box-shadow: 0 15px 35px -5px rgba(0, 50, 100, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.green-card {
+    background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+    box-shadow: 0 15px 35px -5px rgba(16, 185, 129, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.purple-card {
+    background: linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%);
+    box-shadow: 0 15px 35px -5px rgba(124, 58, 237, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.red-card {
+    background: linear-gradient(135deg, #EF4444 0%, #991B1B 100%);
+    box-shadow: 0 15px 35px -5px rgba(239, 68, 68, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- CARD INTERNALS --- */
+
+/* Text Colors */
+.text-white {
+    color: white !important;
+}
+
+.text-dark {
+    color: #1F2937 !important;
+}
+
+.tag-white {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.tag-dark {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #1F2937;
+}
+
+.op-70 {
+    opacity: 0.7;
+}
+
+/* Top Row */
+.card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bank-logo-text {
+    font-weight: 800;
+    font-style: italic;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+}
+
+.card-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+/* Chip Row */
+.chip-row {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Realistic EMV Chip */
+.emv-chip {
+    width: 45px;
+    height: 32px;
+    background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #B8860B;
+}
+
+.chip-line {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.chip-line.vertical {
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    transform: translateX(-50%);
+}
+
+.chip-line.horizontal {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    transform: translateY(-50%);
+}
+
+.chip-curve {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    transform: translate(-50%, -50%);
+}
+
+/* Contactless Icon */
+.wifi-symbol {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    overflow: hidden;
+    transform: rotate(45deg) scale(0.8);
+}
+
+.wifi-circle {
+    position: absolute;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.wifi-circle.first {
+    bottom: -2px;
+    left: -2px;
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    border: none;
+}
+
+.wifi-circle.second {
+    bottom: -6px;
+    left: -6px;
+    width: 14px;
+    height: 14px;
+    border-bottom: none;
+    border-left: none;
+}
+
+.wifi-circle.third {
+    bottom: -10px;
+    left: -10px;
+    width: 22px;
+    height: 22px;
+    border-bottom: none;
+    border-left: none;
+}
+
+.icon-white {
+    color: white;
+}
+
+.icon-dark {
+    color: #374151;
+}
+
+/* Card Number */
+.card-number-large {
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    margin: 15px 0;
+    width: 100%;
+    text-align: left;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Bottom Row */
+.card-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.meta-col {
+    flex: 1;
+}
+
+.meta-col label {
+    font-size: 9px;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.meta-col span {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.visa-logo {
+    font-weight: 800;
+    font-size: 24px;
+    font-style: italic;
+    text-align: right;
+}
+
+.mc-logo-circles {
+    display: flex;
+    position: relative;
+    width: 36px;
+}
+
+.mc-logo-circles .circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    opacity: 0.9;
+}
+
+.mc-logo-circles .red {
+    background: #EB001B;
+}
+
+.mc-logo-circles .orange {
+    background: #F79E1B;
+    margin-left: -10px;
+}
+
+
+/* --- FROZEN STATE --- */
+.frost-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 24px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.frost-lock-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.frost-text {
+    color: #1F2937;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 3px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 4px 12px;
+    border-radius: 12px;
+}
+
+/* --- ACTION GRID (Buttons under card) --- */
+.card-actions-grid {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 32px;
+    padding: 0 16px;
+}
+
+.c-action-btn {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.c-icon-box {
+    width: 56px;
+    height: 56px;
+    background: white;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1F2937;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #F3F4F6;
+    transition: transform 0.1s;
+}
+
+.c-icon-box:active {
+    transform: scale(0.95);
+}
+
+.c-icon-box.active-freeze {
+    background: #EBF8FF;
+    color: #0284C7;
+    border-color: #BAE6FD;
+}
+
+.c-icon-box.active-dark {
+    background: #1F2937;
+    color: white;
+    border-color: #1F2937;
+}
+
+.c-action-btn span {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4B5563;
+}
+
+/* --- CREATE CARD FORM & SKINS --- */
+.create-card-form {
+    padding: 0 10px;
+}
+
+.skin-scroll-wrapper {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 4px;
+    padding-bottom: 12px;
+    scrollbar-width: none;
+    align-items: center;
+}
+
+.skin-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    /* FIX: Prevents squashing to ovals */
+    min-width: 48px;
+}
+
+.skin-btn.selected {
+    border-color: #0E648E;
+    transform: scale(1.1);
+}
+
+.skin-btn.silver {
+    background: linear-gradient(135deg, #E2E2E2, #D1D5DB);
+}
+
+.skin-btn.black {
+    background: #1F2937;
+}
+
+.skin-btn.gold {
+    background: linear-gradient(135deg, #FCD34D, #F59E0B);
+}
+
+.skin-btn.blue {
+    background: #0062CC;
+}
+
+.skin-btn.green {
+    background: #10B981;
+}
+
+.skin-btn.purple {
+    background: #7C3AED;
+}
+
+.skin-btn.red {
+    background: #EF4444;
+}
+
+.skin-btn.centurion {
+    background: #222;
+    border: 1px solid #666;
+}
+
+/* --- SETTINGS LIST (Bottom) --- */
+.long-settings-list {
+    background: white;
+    margin: 0 24px;
+    border-radius: 24px;
+    padding: 0 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.list-title {
+    padding: 20px 0 10px 0;
+    margin: 0;
+    font-size: 14px;
+    color: #6B7280;
+    text-transform: uppercase;
+}
+
+.long-btn {
+    display: flex;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid #F3F4F6;
+    cursor: pointer;
+}
+
+.lb-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    flex-shrink: 0;
+}
+
+.lb-icon.blue {
+    background: #E0F2FE;
+    color: #0284C7;
+}
+
+.lb-icon.orange {
+    background: #FEF3C7;
+    color: #D97706;
+}
+
+.lb-icon.green {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.lb-icon.purple {
+    background: #F3E8FF;
+    color: #9333EA;
+}
+
+.lb-icon.red {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+.lb-icon.grey {
+    background: #F3F4F6;
+    color: #4B5563;
+}
+
+.lb-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.lb-content h4 {
+    margin: 0;
+    font-size: 15px;
+    color: #1F2937;
+}
+
+.lb-content p {
+    margin: 2px 0 0 0;
+    font-size: 12px;
+    color: #9CA3AF;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Dots */
+.carousel-dots.spacer-bottom {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #D1D5DB;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.dot.active {
+    background: #0E648E;
+    width: 24px;
+    border-radius: 10px;
+}
+
+/* Buttons */
+.create-new-btn {
+    width: 100%;
+    padding: 16px;
+    background: #111827;
+    color: white;
+    border: none;
+    border-radius: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+}
+
+.save-card-btn {
+    width: 100%;
+    margin-top: 32px;
+    padding: 16px;
+    background: #111827;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.save-card-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Inputs */
+.field-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B7280;
+    margin-bottom: 8px;
+    margin-top: 16px;
+}
+
+.input-wrapper-simple {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.input-wrapper-simple input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.network-selector {
+    display: flex;
+    gap: 12px;
+}
+
+.net-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    background: white;
+    font-weight: 600;
+    color: #6B7280;
+    cursor: pointer;
+}
+
+.net-btn.active {
+    background: #0E648E;
+    color: white;
+    border-color: #0E648E;
+}

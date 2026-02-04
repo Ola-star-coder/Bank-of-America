@@ -1,13 +1,10 @@
 /* --- GLOBAL CONTAINER FIX --- */
 .dashboard-container {
     padding: 24px;
-    /* Use a rich dark grey, not pitch black */
     background-color: #121212;
     min-height: 100vh;
     color: #E0E0E0;
-    /* Softer white text */
     max-width: 480px;
-    /* Force mobile width on desktop */
     margin: 0 auto;
 }
 
@@ -221,9 +218,8 @@
     font-weight: 500;
 }
 
-/* --- 4. TRANSACTIONS FIX --- */
 .transactions-section {
-    padding-bottom: 20px;
+    padding-bottom: 40px;
 }
 
 .section-header {
@@ -260,11 +256,9 @@
     align-items: center;
     justify-content: space-between;
     background-color: #1C1C1E;
-    /* Card background color */
     padding: 16px;
     border-radius: 16px;
     border: 1px solid #2C2C2E;
-    /* Subtle border for definition */
 }
 
 .t-avatar {

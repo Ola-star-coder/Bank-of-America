@@ -13,6 +13,7 @@ import Transfer from './Pages/Dashboard/Transfer/Transfer';
 import Settings from './Pages/Dashboard/Settings';
 import NotFound from './Pages/NotFound';
 import AllTransactions from './Pages/Dashboard/History/AllTransactions';
+import MyCards from './components/Cards/MyCards';
 
 function App() {
   return (
@@ -47,6 +48,15 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+
+            <Route 
+             path="/cards" 
+             element={
+               <ProtectedRoute>
+                 <MyCards />
+               </ProtectedRoute>
+             } 
+          />
 
             <Route 
               path="/settings" 

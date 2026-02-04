@@ -10,25 +10,22 @@ import {
 } from 'phosphor-react';
 import './Dashboard.css';
 
-// Components living God
+// Components
 import CardCarousel from '../../components/Cards/CardCarousel';
 import ActionSlider from '../../components/Widgets/ActionSlider';
+import NotificationSheet from '../../components/Sheets/NotificationSheet';
 import { useTransferModal } from '../../Context/TransferModelContext';
 
 const Home = () => {
   const { user } = useAuth();
   const { openTransfer } = useTransferModal();
   const navigate = useNavigate();
-  const [showBalance, setShowBalance] = useState(true);
-
-  //Greetings greetings
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning,';
-    if (hour < 18) return 'Good Afternoon,';
-    return 'Good Evening,';
-  };
   
+  // State
+  const [showBalance, setShowBalance] = useState(true);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [hasUnread, setHasUnread] = useState(true);
+
   // 1. Lazy State for Instant Name Rendering
   const [userData, setUserData] = useState(() => {
     const saved = localStorage.getItem('last_user_data');
@@ -36,7 +33,8 @@ const Home = () => {
       balance: 0,
       accountNumber: 'Loading...',
       firstName: saved ? JSON.parse(saved).name : 'User',
-      transactions: [] 
+      transactions: [],
+      beneficiaries: [] 
     };
   });
 
@@ -51,8 +49,8 @@ const Home = () => {
           balance: data.balance,
           accountNumber: data.accountNumber,
           firstName: data.fullName ? data.fullName.split(' ')[0] : 'User',
-          // Show newest transactions first
-          transactions: data.transactions ? [...data.transactions].reverse() : [] 
+          transactions: data.transactions ? [...data.transactions].reverse() : [],
+          beneficiaries: data.beneficiaries || []
         });
       }
     });
@@ -60,29 +58,44 @@ const Home = () => {
     return () => unsub();
   }, [user]);
 
+  // Greeting Logic
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning,';
+    if (hour < 18) return 'Good Afternoon,';
+    return 'Good Evening,';
+  };
+
   return (
     <div className="dashboard-container page-fade">
       
       {/* HEADER */}
       <header className="dash-header">
-        <div className="user-profile">
+        {/* Click Profile -> Go to Settings */}
+        <div className="user-profile" onClick={() => navigate('/settings')} style={{cursor:'pointer'}}>
           <div className="profile-pic">
              <span>{userData.firstName.charAt(0)}</span>
           </div>
          <div className="greeting">
-            {/* USE THE FUNCTION HERE */}
             <span>{getGreeting()}</span>
             <h3>{userData.firstName}</h3>
           </div>
         </div>
         
-        <button className="notif-btn">
+        {/* Click Bell -> Open Notifications */}
+        <button 
+            className="notif-btn" 
+            onClick={() => {
+                setIsNotifOpen(true);
+                setHasUnread(false);
+            }}
+        >
           <Bell size={20} weight="fill" />
-          <div className="red-dot"></div>
+          {hasUnread && <div className="red-dot"></div>}
         </button>
       </header>
 
-      {/* NEW: SWIPEABLE CARDS */}
+      {/* CARDS */}
       <CardCarousel 
           userData={userData} 
           showBalance={showBalance}
@@ -143,6 +156,7 @@ const Home = () => {
         </div>
       </div>
 
+      {/* SLIDER WIDGET */}
       <ActionSlider />
 
       {/* TRANSACTIONS LIST */}
@@ -154,14 +168,14 @@ const Home = () => {
 
         <div className="t-list">
           {userData.transactions.length > 0 ? (
-            userData.transactions.slice(0, 3).map((t) => ( // Limit to 5 items
+            userData.transactions.slice(0, 3).map((t) => (
               <div key={t.id} className="t-item">
                 <div className={`t-avatar ${t.type}`}>
                   {t.type === 'credit' ? <Wallet size={20} weight="fill"/> : <PaperPlaneTilt size={20} weight="fill"/>}
                 </div>
                 <div className="t-info">
                   <h5>{t.title}</h5>
-                  <span>{t.date}</span>
+                  <span>{new Date(t.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
                 </div>
                 <div className={`t-amount ${t.type}`}>
                   {t.type === 'credit' ? '+' : '-'}${Math.abs(t.amount).toLocaleString()}
@@ -175,6 +189,13 @@ const Home = () => {
           )}
         </div>
       </div>
+
+      {/* NOTIFICATION SHEET */}
+      <NotificationSheet 
+         isOpen={isNotifOpen} 
+         onClose={() => setIsNotifOpen(false)} 
+      />
+
     </div>
   );
 };

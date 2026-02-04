@@ -7,7 +7,7 @@
     /* Light Gray Background */
     font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     padding: 24px;
-    padding-bottom: 100px;
+    padding-bottom: 130px;
     overflow-x: hidden;
 }
 
@@ -472,58 +472,132 @@ input:checked+.slider:before {
 /* =========================================
    SUCCESS
    ========================================= */
+/* =========================================
+   NEW RECEIPT STYLE (SuccessStep)
+   ========================================= */
+
 .success-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 70vh;
+    justify-content: flex-start;
+    /* Move closer to top */
+    padding-top: 20px;
+    height: auto;
+    min-height: 80vh;
+}
+
+/* The Card Itself */
+.receipt-card {
+    background: white;
+    width: 100%;
+    border-radius: 24px;
+    padding: 32px 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    margin-bottom: 32px;
     text-align: center;
+    position: relative;
+}
+
+.success-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    margin: 16px 0 8px 0;
+}
+
+.success-header p {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0;
 }
 
 .success-icon-wrapper {
-    margin-bottom: 24px;
-    animation: popIn 0.5s;
+    /* No animation needed if you want it static, 
+      but a subtle pop is nice */
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes popIn {
-    from {
-        transform: scale(0);
-    }
-
-    to {
-        transform: scale(1);
-    }
+/* Dividers */
+.receipt-divider {
+    height: 1px;
+    background: #F3F4F6;
+    margin: 24px 0;
 }
 
-.success-container h2 {
-    font-size: 26px;
+.receipt-divider-dashed {
+    height: 1px;
+    border-top: 2px dashed #E5E7EB;
+    margin: 20px 0;
+}
+
+/* Data Rows */
+.r-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.r-row span:first-child {
+    font-size: 13px;
+    color: #9CA3AF;
+    font-weight: 500;
+}
+
+.r-val {
+    font-size: 14px;
+    color: #1F2937;
+    font-weight: 600;
+    text-align: right;
+}
+
+.r-row.total {
+    margin-bottom: 0;
+    margin-top: 8px;
+}
+
+.r-total-val {
+    font-size: 24px;
     font-weight: 700;
-    color: #111827;
-    margin-bottom: 8px;
-}
-
-.success-container p {
-    font-size: 15px;
-    color: #6B7280;
-    margin-bottom: 40px;
-    line-height: 1.5;
+    color: #10B981;
+    /* Success Green */
+    letter-spacing: -0.5px;
 }
 
 .receipt-actions {
-    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    /* STACKS THEM VERTICALLY */
+    gap: 16px;
+    /* Space between buttons */
+    width: 100%;
+    margin-top: 10px;
 }
 
-.secondary-btn {
+.receipt-btn {
     width: 100%;
-    background: transparent;
-    color: #0E648E;
+    /* Forces full width */
+    height: 56px;
+    border-radius: 16px;
+    border: none;
     font-size: 16px;
     font-weight: 600;
-    padding: 16px;
-    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     cursor: pointer;
+    transition: transform 0.1s;
+}
+
+/* Make "Share" look like a secondary action (Gray) */
+.receipt-btn.share {
+    background: #F3F4F6;
+    color: #1F2937;
+    border: 1px solid #E5E7EB;
+}
+
+/* Make "Done" look like the primary action (Black/Brand) */
+.receipt-btn.home {
+    background: #1C1C1E;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

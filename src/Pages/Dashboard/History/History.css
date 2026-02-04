@@ -1,91 +1,145 @@
-/* --- PAGE LAYOUT --- */
+/* src/Pages/Dashboard/History/History.css */
+
+/* --- PAGE CONTAINER --- */
 .history-container {
+    background-color: #F8F9FA;
+    /* Very light gray */
     min-height: 100vh;
-    background-color: #F3F4F6;
-    /* Clean Light Gray */
-    font-family: 'Poppins', sans-serif;
     padding: 20px;
-    padding-bottom: 80px;
-    /* Space for bottom scroll */
+    padding-bottom: 140px;
+    /* EXTRA SPACE so Navbar doesn't block last item */
+    font-family: 'Poppins', sans-serif;
 }
 
-/* --- STICKY HEADER SECTION --- */
-/* This makes the Search & Filter stick to the top */
-.history-controls {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: rgba(243, 244, 246, 0.95);
-    /* Semi-transparent background */
-    backdrop-filter: blur(10px);
-    /* Frosted Glass Effect */
-    margin: -20px -20px 20px -20px;
-    /* Stretch to edges */
-    padding: 20px 20px 10px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+/* --- HEADER SECTION --- */
+.history-header-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+    /* For Date Picker positioning */
 }
 
-/* Search Bar */
-.search-bar-wrapper {
+.history-header-compact h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.back-btn-simple,
+.calendar-btn {
     background: white;
-    border-radius: 14px;
+    border: 1px solid #E5E7EB;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #1F2937;
+}
+
+.back-btn-simple:active,
+.calendar-btn:active {
+    transform: scale(0.95);
+    background-color: #F3F4F6;
+}
+
+/* Active State for Date Picker */
+.calendar-btn.active-date {
+    border-color: #0E648E;
+    background: #F0F9FF;
+    color: #0E648E;
+}
+
+/* --- NATIVE DATE PICKER HACK --- */
+.hidden-date-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    /* Match button size */
+    height: 40px;
+    opacity: 0;
+    /* Invisible but clickable */
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Date Badge (Shows when date is selected) */
+.date-badge {
+    background: #1F2937;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    margin: 0 auto 16px auto;
+    width: fit-content;
+    animation: fadeIn 0.2s;
+}
+
+/* --- SEARCH BAR --- */
+.search-row {
+    margin-bottom: 16px;
+}
+
+.search-input-wrapper {
+    background: white;
     padding: 12px 16px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     border: 1px solid #E5E7EB;
-    transition: border-color 0.2s;
 }
 
-.search-bar-wrapper:focus-within {
-    border-color: #0E648E;
-    /* Blue border when typing */
-}
-
-.search-bar-wrapper input {
+.search-input-wrapper input {
     border: none;
     outline: none;
     width: 100%;
     font-size: 15px;
-    color: #1F2937;
-    background: transparent;
     font-weight: 500;
+    color: #1F2937;
 }
 
-.search-bar-wrapper input::placeholder {
-    color: #9CA3AF;
-}
-
-/* Filter Chips (Scrollable Row) */
+/* --- FILTER BUTTONS (The Pills) --- */
 .filter-row {
     display: flex;
     gap: 10px;
+    margin-bottom: 24px;
     overflow-x: auto;
-    padding-bottom: 8px;
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
-    /* Firefox */
+    /* Scrollable if screen is tiny */
+    padding-bottom: 4px;
+    /* Space for shadow */
 }
 
+/* Hide Scrollbar */
 .filter-row::-webkit-scrollbar {
     display: none;
 }
 
 .filter-chip {
-    padding: 8px 24px;
-    border-radius: 24px;
+    padding: 8px 20px;
+    border-radius: 50px;
+    /* PILL SHAPE */
     font-size: 13px;
     font-weight: 600;
-    border: 1px solid transparent;
-    cursor: pointer;
-    background: #E5E7EB;
+    border: 1px solid #E5E7EB;
+    background: white;
     color: #6B7280;
-    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+    transition: all 0.2s;
     white-space: nowrap;
-    flex-shrink: 0;
 }
 
 .filter-chip:active {
@@ -93,101 +147,122 @@
 }
 
 .filter-chip.active {
-    background: #0E648E;
-    /* Brand Blue */
+    background: #1F2937;
+    /* Dark Active State */
     color: white;
-    box-shadow: 0 4px 12px rgba(14, 100, 142, 0.3);
+    border-color: #1F2937;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* --- TRANSACTION LIST --- */
-.history-list {
+/* --- TRANSACTION GROUPS --- */
+.history-scroll-area {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 24px;
 }
 
-/* The Transaction Card */
-.t-item {
+.group-header-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 6px;
+    margin-bottom: 8px;
+}
+
+.gh-date {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.gh-total {
+    font-size: 13px;
+    font-weight: 600;
+    color: #9CA3AF;
+}
+
+/* The White Card Container */
+.group-items-box {
     background: white;
-    padding: 16px;
     border-radius: 20px;
+    padding: 4px;
+    /* Inner spacing */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    border: 1px solid #F3F4F6;
+}
+
+/* Individual Row Item */
+.t-row-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-    border: 1px solid #F3F4F6;
-    transition: transform 0.1s;
+    padding: 16px;
+    border-bottom: 1px solid #F3F4F6;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-.t-item:active {
-    transform: scale(0.98);
+.t-row-item:last-child {
+    border-bottom: none;
 }
 
-/* Avatars */
-.t-avatar {
-    width: 48px;
-    height: 48px;
+.t-row-item:active {
+    background: #F9FAFB;
+    border-radius: 16px;
+}
+
+/* Icons */
+.t-icon-box {
+    width: 42px;
+    height: 42px;
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
+    margin-right: 14px;
 }
 
-.t-avatar.credit {
-    background-color: #ECFDF5;
-    /* Light Green Bg */
-    color: #059669;
-    /* Green Icon */
+.t-icon-box.credit {
+    background: #ECFDF5;
+    color: #10B981;
 }
 
-.t-avatar.debit {
-    background-color: #F3F4F6;
-    /* Light Gray Bg */
-    color: #4B5563;
-    /* Dark Gray Icon */
+.t-icon-box.debit {
+    background: #F3F4F6;
+    color: #1F2937;
 }
 
-/* Text Info */
-.t-info {
+/* Content Text */
+.t-content-text {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    overflow: hidden;
+    gap: 2px;
 }
 
-.t-info h5 {
+.t-content-text h4 {
     margin: 0;
     font-size: 15px;
     font-weight: 600;
     color: #1F2937;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-.t-info span {
+.t-content-text span {
     font-size: 12px;
     color: #9CA3AF;
-    font-weight: 500;
 }
 
-/* Amounts */
-.t-amount {
-    font-size: 16px;
+/* Amount Text */
+.t-amount-text {
+    font-size: 15px;
     font-weight: 700;
-    white-space: nowrap;
 }
 
-.t-amount.credit {
-    color: #059669;
-    /* Success Green */
+.t-amount-text.credit {
+    color: #10B981;
 }
 
-.t-amount.debit {
+.t-amount-text.debit {
     color: #1F2937;
 }
 
@@ -196,8 +271,200 @@
     text-align: center;
     padding: 60px 20px;
     color: #9CA3AF;
+}
+
+/* --- TRANSACTION DETAILS SHEET (FIXED) --- */
+
+/* 1. The Dark Overlay - FORCE ON TOP */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Dimmed bg */
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    /* Highest priority */
+    display: flex;
+    align-items: flex-end;
+    /* Align sheet to bottom */
+    padding: 0;
+}
+
+/* 2. The Sheet Content - FORCE ON TOP OF OVERLAY */
+.sheet-content {
+    background: white;
+    width: 100%;
+    max-height: 85vh;
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    padding-bottom: 40px;
+    /* Safe area for iPhone home bar */
+    position: relative;
+    z-index: 10000;
+    animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform: translateY(100%);
+    /* Start hidden */
+}
+
+@keyframes slideUpSheet {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.notif-sheet-bg {
+    background-color: #F9FAFB;
     display: flex;
     flex-direction: column;
+}
+
+/* Search Row */
+.notif-search-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.notif-search-box {
+    flex: 1;
+    background: white;
+    padding: 12px 16px;
+    border-radius: 14px;
+    display: flex;
     align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.notif-search-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+}
+
+.notif-filter-btn {
+    width: 46px;
+    background: #1F2937;
+    /* Dark button like image */
+    color: white;
+    border: none;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Group Label */
+.notif-group-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 12px;
+    margin-top: 8px;
+}
+
+/* THE CARD STYLE */
+.notif-card {
+    background: white;
+    padding: 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: flex-start;
     gap: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    /* Soft Shadow */
+    transition: transform 0.1s;
+}
+
+.notif-card:active {
+    transform: scale(0.98);
+}
+
+/* Icon Box */
+.notif-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    /* Circle */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Icon Themes */
+.notif-icon-box.green {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.notif-icon-box.orange {
+    background: #FEF3C7;
+    color: #D97706;
+}
+
+.notif-icon-box.blue {
+    background: #E0F2FE;
+    color: #0284C7;
+}
+
+.notif-icon-box.red {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+/* Text Content */
+.notif-content {
+    flex: 1;
+}
+
+.notif-top-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.notif-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.notif-time {
+    font-size: 12px;
+    color: #9CA3AF;
+    font-weight: 500;
+}
+
+.notif-msg {
+    margin: 0;
+    font-size: 13px;
+    color: #6B7280;
+    line-height: 1.4;
+}
+
+/* Scroll Area */
+.notif-scroll-area {
+    overflow-y: auto;
+    padding-bottom: 40px;
 }
