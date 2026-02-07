@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CaretLeft, MagnifyingGlass, ArrowDown, ArrowUp, CalendarBlank, XCircle } from 'phosphor-react'; // Added XCircle
+import { CaretLeft, MagnifyingGlass, ArrowDown, ArrowUp, CalendarBlank, XCircle } from 'phosphor-react'; 
 import { useAuth } from '../../../Context/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../Firebase/config';
@@ -12,7 +12,7 @@ const AllTransactions = () => {
   const { user } = useAuth();
   
   const [loading, setLoading] = useState(true);
-  const [rawTransactions, setRawTransactions] = useState([]); // Store original data
+  const [rawTransactions, setRawTransactions] = useState([]); 
   const [groupedTransactions, setGroupedTransactions] = useState([]);
   
   // Filters
@@ -57,8 +57,6 @@ const AllTransactions = () => {
 
     // C. Filter by Date (Native Picker)
     if (selectedDate) {
-        // selectedDate is "2024-02-28", t.timestamp is ms
-        // Check if date strings match
         result = result.filter(t => {
             const txDate = new Date(t.timestamp).toISOString().split('T')[0];
             return txDate === selectedDate;
@@ -79,8 +77,13 @@ const AllTransactions = () => {
       else if (date.toDateString() === yesterday.toDateString()) key = "Yesterday";
 
       if (!groups[key]) groups[key] = { items: [], total: 0 };
+      
       groups[key].items.push(t);
-      groups[key].total += t.amount; 
+      
+      // --- FIX 1: CALCULATE TOTAL SAFELY ---
+      // Convert to float, default to 0 if NaN/Undefined
+      const safeAmount = parseFloat(t.amount) || 0;
+      groups[key].total += safeAmount; 
     });
 
     setGroupedTransactions(Object.entries(groups).map(([label, data]) => ({
@@ -159,24 +162,29 @@ const AllTransactions = () => {
                <div className="group-header-row">
                    <span className="gh-date">{group.label}</span>
                    <span className="gh-total">
+                      {/* FIX 2: PREVENT NAN IN HEADER TOTAL */}
                       {group.dailyTotal > 0 ? '+' : ''}{group.dailyTotal.toLocaleString('en-US', {style:'currency', currency:'USD'})}
                    </span>
                </div>
                <div className="group-items-box">
-                  {group.items.map(t => (
-                     <div key={t.id} className="t-row-item" onClick={() => setSelectedTx(t)}>
-                        <div className={`t-icon-box ${t.type}`}>
-                           {t.type === 'credit' ? <ArrowDown size={18} weight="bold"/> : <ArrowUp size={18} weight="bold"/>}
-                        </div>
-                        <div className="t-content-text">
-                           <h4>{t.title}</h4>
-                           <span>{new Date(t.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
-                        </div>
-                        <div className={`t-amount-text ${t.type}`}>
-                           {t.type === 'credit' ? '+' : '-'}${Math.abs(t.amount).toLocaleString()}
-                        </div>
-                     </div>
-                  ))}
+                  {group.items.map(t => {
+                      // FIX 3: PREVENT NAN IN ROW ITEM
+                      const safeRowAmount = parseFloat(t.amount) || 0;
+                      
+                      return (
+                      <div key={t.id} className="t-row-item" onClick={() => setSelectedTx(t)}>
+                         <div className={`t-icon-box ${t.type}`}>
+                            {t.type === 'credit' ? <ArrowDown size={18} weight="bold"/> : <ArrowUp size={18} weight="bold"/>}
+                         </div>
+                         <div className="t-content-text">
+                            <h4>{t.title}</h4>
+                            <span>{new Date(t.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                         </div>
+                         <div className={`t-amount-text ${t.type}`}>
+                            {t.type === 'credit' ? '+' : '-'}${Math.abs(safeRowAmount).toLocaleString()}
+                         </div>
+                      </div>
+                   )})}
                </div>
             </div>
           ))

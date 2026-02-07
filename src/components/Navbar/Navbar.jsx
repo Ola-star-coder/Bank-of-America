@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { House, ArrowsLeftRight, CreditCard, UserGear } from 'phosphor-react';
-import { useTransferModal } from '../../Context/TransferModelContext';
+import { useTransferModal } from '../../Context/TransferModalContext';
 import './Navbar.css';
 
 const Navbar = () => {

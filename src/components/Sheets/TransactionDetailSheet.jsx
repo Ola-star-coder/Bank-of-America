@@ -7,16 +7,41 @@ const TransactionDetailsSheet = ({ transaction, isOpen, onClose }) => {
   const isCredit = transaction.type === 'credit';
   const color = isCredit ? '#10B981' : '#1F2937';
 
-  const dateStr = new Date(transaction.timestamp).toLocaleString('en-US', {
+  const dateObj = new Date(transaction.timestamp);
+  const dateStr = dateObj.toLocaleString('en-US', {
     weekday: 'short', month: 'short', day: 'numeric', 
     hour: 'numeric', minute: 'numeric'
   });
 
+  // --- NEW: SHARE LOGIC ---
+  const handleShare = async () => {
+    const shareData = {
+        title: 'Transaction Receipt',
+        text: `Transaction: ${transaction.title}\nAmount: $${Math.abs(transaction.amount)}\nRef: ${transaction.id}\nDate: ${dateObj.toLocaleDateString()}`
+    };
+
+    // 1. Try Native Share (Mobile)
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (err) {
+            console.error(err);
+        }
+    } 
+    // 2. Fallback for Desktop (Copy to Clipboard)
+    else {
+        try {
+            await navigator.clipboard.writeText(shareData.text);
+            alert("Receipt details copied to clipboard!");
+        } catch (err) {
+            alert("Unable to share.");
+        }
+    }
+  };
+
   return (
-    // 1. CLICKING HERE CLOSES IT
     <div className="modal-overlay" style={{alignItems: 'flex-end'}} onClick={onClose}>
        
-       {/* 2. ADD e.stopPropagation() HERE TO PREVENT CLOSING WHEN CLICKING CONTENT */}
        <div 
          className="sheet-content slide-up-animation"
          onClick={(e) => e.stopPropagation()} 
@@ -54,7 +79,7 @@ const TransactionDetailsSheet = ({ transaction, isOpen, onClose }) => {
              </div>
           </div>
 
-          <button className="receipt-btn share" style={{marginTop:'24px'}} onClick={() => alert('Share Logic Here')}>
+          <button className="receipt-btn share" style={{marginTop:'24px'}} onClick={handleShare}>
              <ShareNetwork size={20} weight="bold"/>
              Share Receipt
           </button>

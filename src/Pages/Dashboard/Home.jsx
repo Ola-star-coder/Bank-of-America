@@ -14,7 +14,7 @@ import './Dashboard.css';
 import CardCarousel from '../../components/Cards/CardCarousel';
 import ActionSlider from '../../components/Widgets/ActionSlider';
 import NotificationSheet from '../../components/Sheets/NotificationSheet';
-import { useTransferModal } from '../../Context/TransferModelContext';
+import { useTransferModal } from '../../Context/TransferModalContext';
 
 const Home = () => {
   const { user } = useAuth();
@@ -143,7 +143,7 @@ const Home = () => {
             <span>Internet</span>
         </div>
         <div className="action-item">
-            <button className="action-circle cyan">
+            <button className="action-circle cyan" onClick={() => navigate('/cards')}>
                <CreditCard size={24} weight="fill" />
             </button>
             <span>Cards</span>
@@ -178,7 +178,7 @@ const Home = () => {
                   <span>{new Date(t.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
                 </div>
                 <div className={`t-amount ${t.type}`}>
-                  {t.type === 'credit' ? '+' : '-'}${Math.abs(t.amount).toLocaleString()}
+                {t.type === 'credit' ? '+' : '-'}${Math.abs(parseFloat(t.amount) || 0).toLocaleString()}
                 </div>
               </div>
             ))

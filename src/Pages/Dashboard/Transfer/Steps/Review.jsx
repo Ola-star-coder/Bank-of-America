@@ -60,52 +60,78 @@ const ReviewStep = ({ data, onBack, onSuccess }) => {
     executeTransfer();
   };
 
+  // Pages/Dashboard/Transfer/Steps/Review.jsx
+
 const executeTransfer = async () => {
     try {
-      const sendAmount = parseFloat(data.amount);
+      // 1. FORCE CONVERSION TO NUMBER
+      const sendAmount = parseFloat(data.amount); 
+      
+      // Safety Check: If it's not a number, stop immediately
+      if (isNaN(sendAmount)) {
+          toast.error("Invalid Amount");
+          return;
+      }
 
       await runTransaction(db, async (transaction) => {
         const senderRef = doc(db, "users", user.uid);
         const senderDoc = await transaction.get(senderRef);
         if (!senderDoc.exists()) throw "Sender error";
         
-        const newSenderBalance = senderDoc.data().balance - sendAmount;
+        // Ensure balance is treated as a number
+        const currentSenderBalance = parseFloat(senderDoc.data().balance);
+        const newSenderBalance = currentSenderBalance - sendAmount;
+        
         if (newSenderBalance < 0) throw "Insufficient Funds";
 
         const recipientRef = doc(db, "users", data.recipient.uid);
         const recipientDoc = await transaction.get(recipientRef);
         if (!recipientDoc.exists()) throw "Recipient error";
 
-        const newRecipientBalance = recipientDoc.data().balance + sendAmount;
+        const currentRecipientBalance = parseFloat(recipientDoc.data().balance);
+        const newRecipientBalance = currentRecipientBalance + sendAmount;
 
-        // ... (Transaction Record creation logic stays the same) ...
-        const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        const debitRecord = { /* ... keep your existing record logic ... */ };
-        const creditRecord = { /* ... keep your existing record logic ... */ };
+        // --- THE CRITICAL PART: DEFINING THE RECORDS CORRECTLY ---
+        
+        // Record for YOU (Money Out)
+        const debitRecord = {
+            id: 'tx_' + Date.now(),
+            type: 'debit',
+            amount: sendAmount, // <--- SAVED AS NUMBER
+            title: `Transfer to ${data.recipient.fullName}`,
+            recipientName: data.recipient.fullName,
+            timestamp: Date.now(),
+            status: 'success'
+        };
 
+        // Record for THEM (Money In)
+        const creditRecord = {
+            id: 'tx_' + Date.now() + '_r',
+            type: 'credit',
+            amount: sendAmount, // <--- SAVED AS NUMBER
+            title: `Received from ${user.displayName || 'User'}`,
+            senderName: user.displayName || 'User',
+            timestamp: Date.now(),
+            status: 'success'
+        };
 
-        // 1. Prepare Updates object
+        // 1. Prepare Updates
         const senderUpdates = {
             balance: newSenderBalance,
             transactions: arrayUnion(debitRecord)
         };
 
-        // 2. LOGIC FIX: Handle Beneficiaries Manually
+        // 2. Handle Beneficiaries
         if (saveToBen) {
             const currentBens = senderDoc.data().beneficiaries || [];
-            
-            // Remove the person if they are already in the list (so we don't duplicate)
             const otherBens = currentBens.filter(b => b.uid !== data.recipient.uid);
-
             const newBenEntry = {
                 uid: data.recipient.uid,
                 fullName: data.recipient.fullName,
                 accountNumber: data.recipient.accountNumber,
                 bankName: data.recipient.bankName || 'Opay', 
-                lastSent: Date.now() // Updating timestamp is fine now because we removed the old one
+                lastSent: Date.now()
             };
-
-            // Add the new/updated person to the top of the list
             senderUpdates.beneficiaries = [newBenEntry, ...otherBens];
         }
 
@@ -123,7 +149,7 @@ const executeTransfer = async () => {
 
     } catch (error) {
       console.error(error);
-      toast.error("Transfer Failed");
+      toast.error("Transfer Failed: " + error);
       setIsLoading(false);
     }
   };
