@@ -1,17 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import { 
-  PaperPlaneTilt, Bank, QrCode, 
-  Users, GlobeHemisphereWest, CaretRight 
-} from 'phosphor-react';
+import { PaperPlaneTilt, Bank, CaretRight } from 'phosphor-react';
 import BottomSheet from '../BottomSheet/BottomSheet';
-import './TransferSheet.css'; // We will add specific styling for the grid below
+import './TransferSheet.css';
 
 const TransferSheet = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
 
   const handleNavigate = (path) => {
-    onClose(); // Close sheet first
-    setTimeout(() => navigate(path), 300); // Wait for animation then go
+    onClose();
+    setTimeout(() => navigate(path), 300);
   };
 
   return (
@@ -20,50 +17,26 @@ const TransferSheet = ({ isOpen, onClose }) => {
       
       <div className="transfer-grid">
         
-        {/* OPTION 1: Internal Transfer (Existing) */}
+        {/* OPTION 1: Internal Transfer */}
         <button className="t-option-card" onClick={() => handleNavigate('/transfer')}>
             <div className="t-icon-circle purple">
                 <PaperPlaneTilt size={28} weight="fill" />
             </div>
             <div className="t-text">
                 <span className="t-label">Send to App User</span>
-                <span className="t-sub">Instant • Free</span>
+                <span className="t-sub">Instant • Free • internal</span>
             </div>
             <CaretRight size={20} color="#D1D5DB" />
         </button>
 
-        {/* OPTION 2: Bank Transfer (Future) */}
-        <button className="t-option-card" onClick={() => alert("Bank Transfer Coming Soon!")}>
+        {/* OPTION 2: Global Bank Transfer */}
+        <button className="t-option-card" onClick={() => handleNavigate('/bank-transfer')}>
             <div className="t-icon-circle green">
                 <Bank size={28} weight="fill" />
             </div>
             <div className="t-text">
-                <span className="t-label">Bank Transfer</span>
-                <span className="t-sub">Chase, Paypal, Venmo</span>
-            </div>
-            <CaretRight size={20} color="#D1D5DB" />
-        </button>
-
-        {/* OPTION 3: International */}
-        <button className="t-option-card" onClick={() => alert("Coming Soon!")}>
-            <div className="t-icon-circle blue">
-                <GlobeHemisphereWest size={28} weight="fill" />
-            </div>
-            <div className="t-text">
-                <span className="t-label">Cross Border</span>
-                <span className="t-sub">Send to UK/France</span>
-            </div>
-            <CaretRight size={20} color="#D1D5DB" />
-        </button>
-
-        {/* OPTION 4: QR Code */}
-        <button className="t-option-card" onClick={() => alert("Coming Soon!")}>
-            <div className="t-icon-circle black">
-                <QrCode size={28} weight="fill" />
-            </div>
-            <div className="t-text">
-                <span className="t-label">Scan QR</span>
-                <span className="t-sub">Pay Merchants</span>
+                <span className="t-label">Bank / Wire Transfer</span>
+                <span className="t-sub">Local & International (ACH, IBAN)</span>
             </div>
             <CaretRight size={20} color="#D1D5DB" />
         </button>

@@ -8,7 +8,7 @@ const Navbar = () => {
   const path = location.pathname;
   const { openTransfer } = useTransferModal();
 
-  if (['/login', '/register', '/transfer',].includes(path)) return null;
+  if (['/login', '/register', '/transfer','/bank-transfer'].includes(path)) return null;
 
   return (
     <>

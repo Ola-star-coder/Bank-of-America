@@ -60,89 +60,69 @@ const ReviewStep = ({ data, onBack, onSuccess }) => {
     executeTransfer();
   };
 
-  // Pages/Dashboard/Transfer/Steps/Review.jsx
-
 const executeTransfer = async () => {
     try {
-      // 1. FORCE CONVERSION TO NUMBER
-      const sendAmount = parseFloat(data.amount); 
-      
-      // Safety Check: If it's not a number, stop immediately
-      if (isNaN(sendAmount)) {
-          toast.error("Invalid Amount");
-          return;
-      }
+      const sendAmount = parseFloat(data.amount);
+      if (isNaN(sendAmount)) { toast.error("Invalid Amount"); return; }
 
       await runTransaction(db, async (transaction) => {
         const senderRef = doc(db, "users", user.uid);
         const senderDoc = await transaction.get(senderRef);
         if (!senderDoc.exists()) throw "Sender error";
         
-        // Ensure balance is treated as a number
         const currentSenderBalance = parseFloat(senderDoc.data().balance);
         const newSenderBalance = currentSenderBalance - sendAmount;
-        
         if (newSenderBalance < 0) throw "Insufficient Funds";
 
-        const recipientRef = doc(db, "users", data.recipient.uid);
-        const recipientDoc = await transaction.get(recipientRef);
-        if (!recipientDoc.exists()) throw "Recipient error";
-
-        const currentRecipientBalance = parseFloat(recipientDoc.data().balance);
-        const newRecipientBalance = currentRecipientBalance + sendAmount;
-
-        // --- THE CRITICAL PART: DEFINING THE RECORDS CORRECTLY ---
-        
-        // Record for YOU (Money Out)
+        // 2. Prepare Debit Record (For You)
         const debitRecord = {
             id: 'tx_' + Date.now(),
             type: 'debit',
-            amount: sendAmount, // <--- SAVED AS NUMBER
-            title: `Transfer to ${data.recipient.fullName}`,
+            amount: sendAmount,
+            title: data.recipient.isExternal 
+                   ? `Transfer to ${data.recipient.bankName}` 
+                   : `Transfer to ${data.recipient.fullName}`,
             recipientName: data.recipient.fullName,
             timestamp: Date.now(),
             status: 'success'
         };
 
-        // Record for THEM (Money In)
-        const creditRecord = {
-            id: 'tx_' + Date.now() + '_r',
-            type: 'credit',
-            amount: sendAmount, // <--- SAVED AS NUMBER
-            title: `Received from ${user.displayName || 'User'}`,
-            senderName: user.displayName || 'User',
-            timestamp: Date.now(),
-            status: 'success'
-        };
-
-        // 1. Prepare Updates
         const senderUpdates = {
             balance: newSenderBalance,
             transactions: arrayUnion(debitRecord)
         };
 
-        // 2. Handle Beneficiaries
-        if (saveToBen) {
-            const currentBens = senderDoc.data().beneficiaries || [];
-            const otherBens = currentBens.filter(b => b.uid !== data.recipient.uid);
-            const newBenEntry = {
-                uid: data.recipient.uid,
-                fullName: data.recipient.fullName,
-                accountNumber: data.recipient.accountNumber,
-                bankName: data.recipient.bankName || 'Opay', 
-                lastSent: Date.now()
+        // 3. Handle External vs Internal
+        if (data.recipient.isExternal) {  
+            transaction.update(senderRef, senderUpdates);
+            
+        } else {
+            // --- INTERNAL TRANSFER (APP USER) ---
+            const recipientRef = doc(db, "users", data.recipient.uid);
+            const recipientDoc = await transaction.get(recipientRef);
+            if (!recipientDoc.exists()) throw "Recipient error";
+
+            const currentRecipientBalance = parseFloat(recipientDoc.data().balance);
+            const newRecipientBalance = currentRecipientBalance + sendAmount;
+
+            const creditRecord = {
+                id: 'tx_' + Date.now() + '_r',
+                type: 'credit',
+                amount: sendAmount,
+                title: `Received from ${user.displayName || 'User'}`,
+                senderName: user.displayName || 'User',
+                timestamp: Date.now(),
+                status: 'success'
             };
-            senderUpdates.beneficiaries = [newBenEntry, ...otherBens];
+
+            // Update Sender
+            // (Beneficiary logic goes here if you kept it)
+            transaction.update(senderRef, senderUpdates);
+            transaction.update(recipientRef, { 
+                balance: newRecipientBalance,
+                transactions: arrayUnion(creditRecord) 
+            });
         }
-
-        // 3. Commit Updates
-        transaction.update(senderRef, senderUpdates);
-        
-        transaction.update(recipientRef, { 
-            balance: newRecipientBalance,
-            transactions: arrayUnion(creditRecord) 
-        });
-
       });
 
       onSuccess(); 
@@ -152,7 +132,7 @@ const executeTransfer = async () => {
       toast.error("Transfer Failed: " + error);
       setIsLoading(false);
     }
-  };
+};
 
   return (
     <div className="step-content animate-slide-up">

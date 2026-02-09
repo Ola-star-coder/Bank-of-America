@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CaretLeft, MagnifyingGlass, ArrowDown, ArrowUp, CalendarBlank, XCircle } from 'phosphor-react'; 
+import { CaretLeft, MagnifyingGlass, ArrowDown, ArrowUp, CalendarBlank, XCircle } from 'phosphor-react';
 import { useAuth } from '../../../Context/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../Firebase/config';
@@ -31,8 +31,9 @@ const AllTransactions = () => {
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const data = docSnap.data().transactions || [];
-                // Sort newest first
-                setRawTransactions(data.sort((a, b) => b.timestamp - a.timestamp));
+                // CRASH FIX: Ensure timestamp exists before sorting
+                const sortedData = data.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                setRawTransactions(sortedData);
             }
         } catch (err) { console.error(err); } 
         finally { setLoading(false); }
@@ -44,29 +45,33 @@ const AllTransactions = () => {
   useEffect(() => {
     let result = rawTransactions;
 
-    // A. Filter by Type
+    // A. Filter by Type (Money In vs Money Out)
     if (filterType !== 'all') {
         result = result.filter(t => t.type === filterType);
     }
 
-    // B. Filter by Search
+    // B. Filter by Search (CRASH FIX: Check if title exists first)
     if (searchTerm) {
         const lower = searchTerm.toLowerCase();
-        result = result.filter(t => t.title.toLowerCase().includes(lower));
+        result = result.filter(t => (t.title || '').toLowerCase().includes(lower));
     }
 
     // C. Filter by Date (Native Picker)
     if (selectedDate) {
         result = result.filter(t => {
+            if (!t.timestamp) return false;
             const txDate = new Date(t.timestamp).toISOString().split('T')[0];
             return txDate === selectedDate;
         });
     }
 
-    // D. Grouping
+    // D. Grouping Logic
     const groups = {};
     result.forEach(t => {
-      const date = new Date(t.timestamp);
+      // Safety check for date
+      const timestamp = t.timestamp || Date.now();
+      const date = new Date(timestamp);
+      
       const today = new Date();
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
@@ -80,10 +85,17 @@ const AllTransactions = () => {
       
       groups[key].items.push(t);
       
-      // --- FIX 1: CALCULATE TOTAL SAFELY ---
-      // Convert to float, default to 0 if NaN/Undefined
-      const safeAmount = parseFloat(t.amount) || 0;
-      groups[key].total += safeAmount; 
+      // --- TOTAL CALCULATION ---
+      // 1. Convert to number (fix NaN)
+      const val = parseFloat(t.amount);
+      const safeAmount = isNaN(val) ? 0 : val;
+
+      // 2. Add or Subtract based on type
+      if (t.type === 'credit') {
+          groups[key].total += safeAmount;
+      } else {
+          groups[key].total -= safeAmount; // Subtract debits for correct Daily Net
+      }
     });
 
     setGroupedTransactions(Object.entries(groups).map(([label, data]) => ({
@@ -96,14 +108,14 @@ const AllTransactions = () => {
   return (
     <div className="history-container page-slide">
       
-      {/* HEADER */}
+      {/* HEADER WITH DATE PICKER */}
       <div className="history-header-compact">
          <button onClick={() => navigate(-1)} className="back-btn-simple">
              <CaretLeft size={24} color="#1F2937"/>
          </button>
          <h2>Transactions</h2>
          
-         {/* NATIVE DATE PICKER HACK */}
+         {/* THE HIDDEN DATE INPUT HACK */}
          <div style={{position: 'relative'}}>
              <button className={`calendar-btn ${selectedDate ? 'active-date' : ''}`}>
                  <CalendarBlank size={24} color={selectedDate ? '#0E648E' : '#1F2937'} />
@@ -116,7 +128,7 @@ const AllTransactions = () => {
          </div>
       </div>
       
-      {/* SHOW SELECTED DATE BADGE */}
+      {/* SHOW SELECTED DATE BADGE (Clear Button) */}
       {selectedDate && (
           <div style={{display:'flex', justifyContent:'center', marginBottom:'16px'}}>
               <div className="date-badge" onClick={() => setSelectedDate('')}>
@@ -138,7 +150,6 @@ const AllTransactions = () => {
          </div>
       </div>
 
-      {/* FILTER CHIPS */}
       <div className="filter-row" style={{marginBottom:'24px', paddingBottom:'0'}}>
           <button 
             className={`filter-chip ${filterType === 'all' ? 'active' : ''}`}
@@ -154,22 +165,26 @@ const AllTransactions = () => {
           >Money Out</button>
       </div>
 
-      {/* LIST */}
+      {/* TRANSACTION LIST */}
       <div className="history-scroll-area">
          {groupedTransactions.length > 0 ? (
           groupedTransactions.map((group, index) => (
             <div key={index} className="history-group-section">
+               {/* Group Header (e.g., Today +$500) */}
                <div className="group-header-row">
                    <span className="gh-date">{group.label}</span>
                    <span className="gh-total">
-                      {/* FIX 2: PREVENT NAN IN HEADER TOTAL */}
-                      {group.dailyTotal > 0 ? '+' : ''}{group.dailyTotal.toLocaleString('en-US', {style:'currency', currency:'USD'})}
+                      {group.dailyTotal > 0 ? '+' : ''}
+                      {group.dailyTotal.toLocaleString('en-US', {style:'currency', currency:'USD'})}
                    </span>
                </div>
+               
+               {/* Items */}
                <div className="group-items-box">
                   {group.items.map(t => {
-                      // FIX 3: PREVENT NAN IN ROW ITEM
-                      const safeRowAmount = parseFloat(t.amount) || 0;
+                      // Safety Check for Row Amount
+                      const val = parseFloat(t.amount);
+                      const safeRowAmount = isNaN(val) ? 0 : val;
                       
                       return (
                       <div key={t.id} className="t-row-item" onClick={() => setSelectedTx(t)}>
@@ -177,11 +192,16 @@ const AllTransactions = () => {
                             {t.type === 'credit' ? <ArrowDown size={18} weight="bold"/> : <ArrowUp size={18} weight="bold"/>}
                          </div>
                          <div className="t-content-text">
-                            <h4>{t.title}</h4>
-                            <span>{new Date(t.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                            <h4>{t.title || 'Unknown Transaction'}</h4>
+                            <span>
+                                {t.timestamp 
+                                    ? new Date(t.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) 
+                                    : '--:--'}
+                            </span>
                          </div>
                          <div className={`t-amount-text ${t.type}`}>
-                            {t.type === 'credit' ? '+' : '-'}${Math.abs(safeRowAmount).toLocaleString()}
+                            {t.type === 'credit' ? '+' : '-'}
+                            ${Math.abs(safeRowAmount).toLocaleString()}
                          </div>
                       </div>
                    )})}

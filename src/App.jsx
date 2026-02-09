@@ -10,6 +10,7 @@ import Login from './Pages/Auth/Login';
 import Register from './Pages/Auth/Register';
 import DashboardHome from './Pages/Dashboard/Home';
 import Transfer from './Pages/Dashboard/Transfer/Transfer';
+import BankTransfer from './Pages/Dashboard/Transfer/BankTransfer';
 import Settings from './Pages/Dashboard/Settings';
 import NotFound from './Pages/NotFound';
 import AllTransactions from './Pages/Dashboard/History/AllTransactions';
@@ -48,6 +49,8 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            
+            <Route path="/bank-transfer" element={<ProtectedRoute><BankTransfer /></ProtectedRoute>} />
 
             <Route 
              path="/cards" 

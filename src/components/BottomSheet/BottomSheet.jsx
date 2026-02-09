@@ -80,10 +80,7 @@ const BottomSheet = ({ isOpen, onClose, children }) => {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        
-        // --- DYNAMIC POSITION ---
-        // If closing, ignore this style (CSS class takes over).
-        // If dragging, follow the finger (offsetY).
+      
         style={!isClosing ? { transform: `translateY(${offsetY}px)` } : {}}
       >
         <div className="sheet-handle-bar">
