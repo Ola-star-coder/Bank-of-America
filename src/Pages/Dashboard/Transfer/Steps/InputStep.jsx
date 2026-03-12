@@ -30,29 +30,42 @@ const InputStep = ({ onNext, initialData }) => {
     fetchBeneficiaries();
   }, [user]);
 
-  const handleSearch = async () => {
-    if (accountNum.length < 10) return;
-    setIsSearching(true);
-    setRecipient(null);
 
-    try {
-      const q = query(collection(db, "users"), where("accountNumber", "==", accountNum));
-      const querySnapshot = await getDocs(q);
+const handleSearch = async () => {
+  if (accountNum.length < 10) return;
+  setIsSearching(true);
+  setRecipient(null);
 
-      if (!querySnapshot.empty) {
-        const foundUser = querySnapshot.docs[0].data();
-        setRecipient(foundUser);
-        toast.success(`Found ${foundUser.fullName}`);
-      } else {
-        toast.error("Account not found.");
+  try {
+    const q = query(
+      collection(db, "users"), 
+      where("accountNumber", "==", accountNum)
+    );
+    
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const foundUser = querySnapshot.docs[0].data();
+      
+      // Safety: Prevent sending to yourself
+      if (foundUser.uid === user.uid) {
+        toast.warn("You cannot send money to yourself.");
+        setIsSearching(false);
+        return;
       }
-    } catch (err) {
-      console.error(err);
-      toast.error("Search failed.");
-    } finally {
-      setIsSearching(false);
+
+      setRecipient(foundUser);
+      toast.success(`Found ${foundUser.fullName}`);
+    } else {
+      toast.error("Account not found.");
     }
-  };
+  } catch (err) {
+    console.error("Search Error Details:", err); 
+    toast.error("Search failed due to permissions.");
+  } finally {
+    setIsSearching(false);
+  }
+};
 
   const handleSelectBeneficiary = (ben) => {
       setRecipient(ben);
