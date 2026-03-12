@@ -26,16 +26,15 @@
     padding-bottom: 40px;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
 
-    /* Animation Basics */
+    /* ADD THIS LINE IF IT IS MISSING */
+    overflow-y: auto;
+
     transform: translateY(100%);
     animation: slideUpSheet 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     position: relative;
-
-    /* Important for Dragging */
     touch-action: pan-y;
-    /* Allow vertical scrolling */
     transition: transform 0.1s linear;
-    /* Default for dragging responsiveness */
+    overscroll-behavior: contain;
 }
 
 /* When we let go and it snaps back, use a bouncy transition */

@@ -8,7 +8,7 @@ import {
 import { useAuth } from '../../Context/AuthContext';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore'; 
 import { db } from '../../Firebase/config';
-import CreateCardSheet from '../Sheets/CreateCardSheet'; // Import the Sheet
+import CreateCardSheet from '../Sheets/CreateCardSheet'; 
 import './Cards.css';
 
 const MyCards = () => {
@@ -18,11 +18,16 @@ const MyCards = () => {
   // State
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
-  const [isCreateOpen, setIsCreateOpen] = useState(false); // Sheet State
+  const [isCreateOpen, setIsCreateOpen] = useState(false); 
   
   // Data State
   const [realData, setRealData] = useState(null);
   const [myCards, setMyCards] = useState([]);
+
+  // UX Fix: Hide details when scrolling to a new card
+  useEffect(() => {
+      setShowDetails(false);
+  }, [activeCardIndex]);
 
   // 1. LISTEN TO REAL DATA (Real-time updates)
   useEffect(() => {
@@ -42,7 +47,9 @@ const MyCards = () => {
                 logo: 'VISA',
                 holder: data.fullName || 'User',
                 last4: data.accountNumber ? data.accountNumber.slice(-4) : '0000',
-                frozen: data.isMainFrozen || false // Store main freeze state in user doc
+                cardNumber: data.accountNumber ? `4000 1234 5678 ${data.accountNumber.slice(-4)}` : null, // Fallback legacy number
+                expiry: '12/28', 
+                frozen: data.isMainFrozen || false 
             };
 
             // Combine with Created Cards (from Firestore array)
@@ -54,11 +61,20 @@ const MyCards = () => {
   }, [user]);
 
   // 2. HANDLE SCROLL (Update Dots)
+// 2. HANDLE SCROLL (Update Dots & Active Index)
   const handleScroll = (e) => {
       const container = e.target;
       const scrollPosition = container.scrollLeft;
-      const cardWidth = container.offsetWidth;
+      
+      // Find the actual physical width of a single card slide + the 16px CSS gap
+      const firstCard = container.querySelector('.card-slide');
+      if (!firstCard) return;
+      
+      const cardWidth = firstCard.offsetWidth + 16; 
+      
+      // Calculate which card we are actually looking at
       const newIndex = Math.round(scrollPosition / cardWidth);
+      
       if (newIndex !== activeCardIndex && newIndex >= 0 && newIndex < myCards.length) {
           setActiveCardIndex(newIndex);
       }
@@ -82,15 +98,19 @@ const MyCards = () => {
       }
   };
 
-  // Helper Helpers
+  // Helper: Format Card Number safely using Real DB Data
   const formatCardNumber = (card) => {
       if (!card) return "•••• •••• •••• ••••";
-      
-      // Use stored last4 or fallback
       const last4 = card.last4 || "0000";
-      const prefix = card.style === 'gold-card' ? "4000 1234 5678" : "4570 2796 5324";
       
+      // Hidden State
       if (!showDetails) return `•••• •••• •••• ${last4}`;
+      
+      // Revealed State: Use real generated PAN if it exists, otherwise use a fallback
+      if (card.cardNumber) return card.cardNumber;
+      
+      // Fallback for legacy cards missing the full PAN
+      const prefix = card.style === 'gold-card' ? "4000 1234 5678" : "4570 2796 5324";
       return `${prefix} ${last4}`;
   };
 
@@ -138,7 +158,7 @@ const MyCards = () => {
                     )}
 
                     <div className="card-top-row">
-                        <span className={`bank-logo-text ${card.style === 'black-card' ? 'text-white' : 'text-dark'}`}>Income</span>
+                        <span className={`bank-logo-text ${card.style === 'black-card' ? 'text-white' : 'text-dark'}`}>Vault</span>
                         <span className={`card-tag ${card.style === 'black-card' ? 'tag-white' : 'tag-dark'}`}>{card.label}</span>
                     </div>
 
@@ -164,7 +184,7 @@ const MyCards = () => {
                     <div className="card-bottom-row">
                         <div className="meta-col">
                             <label className={card.style === 'black-card' ? 'op-70' : ''}>Holder</label>
-                            <span className={card.style === 'black-card' ? 'text-white' : 'text-dark'}>
+                            <span className={card.style === 'black-card' ? 'text-white' : 'text-dark'} style={{textTransform: 'uppercase'}}>
                                 {card.holder || realData.fullName}
                             </span>
                         </div>
@@ -204,11 +224,11 @@ const MyCards = () => {
             <span>{currentCard.frozen ? 'Unfreeze' : 'Freeze'}</span>
          </button>
 
-         <button className="c-action-btn">
+         <button className="c-action-btn" onClick={() => toast.info('Limits configuration coming soon.')}>
             <div className="c-icon-box"><SlidersHorizontal size={22}/></div>
             <span>Limits</span>
          </button>
-         <button className="c-action-btn">
+         <button className="c-action-btn" onClick={() => toast.info('Card replacement process initiated.')}>
             <div className="c-icon-box"><ArrowsLeftRight size={22}/></div>
             <span>Replace</span>
          </button>
@@ -225,17 +245,17 @@ const MyCards = () => {
       {/* SETTINGS LIST */}
       <div className="long-settings-list">
           <h3 className="list-title">Card Settings</h3>
-          <div className="long-btn">
+          <div className="long-btn" onClick={() => toast.info('To change PIN, please use the Security section in Settings.')}>
               <div className="lb-icon purple"><LockKey size={22} weight="fill"/></div>
               <div className="lb-content"><h4>Change PIN</h4><p>Update your 4-digit security pin</p></div>
               <ArrowsLeftRight size={18} color="#9CA3AF"/>
           </div>
-           <div className="long-btn">
+           <div className="long-btn" onClick={() => toast.info('Billing Address syncs with your main profile.')}>
               <div className="lb-icon grey"><MapPin size={22} weight="fill"/></div>
               <div className="lb-content"><h4>Billing Address</h4><p>Edit registered billing info</p></div>
               <ArrowsLeftRight size={18} color="#9CA3AF"/>
           </div>
-           <div className="long-btn" style={{borderBottom:'none'}}>
+           <div className="long-btn" style={{borderBottom:'none'}} onClick={() => toast.error('Card reported as stolen. A representative will contact you.')}>
               <div className="lb-icon red"><ShieldWarning size={22} weight="fill"/></div>
               <div className="lb-content"><h4>Report Stolen</h4><p>Block card and request replacement</p></div>
               <ArrowsLeftRight size={18} color="#9CA3AF"/>

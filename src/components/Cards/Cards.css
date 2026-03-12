@@ -4,7 +4,7 @@
 .cards-page-container {
     background-color: #F8F9FA;
     min-height: 100vh;
-    padding-bottom: 120px;
+    padding-bottom: 160px;
     /* Space for Navbar */
     overflow-x: hidden;
     /* Prevent horizontal page scroll */
@@ -43,10 +43,12 @@
     gap: 16px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding: 24px;
+    padding: 24px 5vw;
+    /* UX FIX: Adjusted padding for the peek effect */
     padding-bottom: 50px;
-    /* Extra space for shadows */
     scrollbar-width: none;
+    scroll-padding: 0 5vw;
+    /* Helps the snapping align perfectly */
 }
 
 .cards-carousel-container::-webkit-scrollbar {
@@ -55,12 +57,13 @@
 
 /* Wrapper for each card slide */
 .card-slide {
-    min-width: 100%;
+    /* UX FIX: Changed from 100% to 85vw so the next card peeks in */
+    min-width: 85vw;
+    max-width: 340px;
     scroll-snap-align: center;
     perspective: 1000px;
     display: flex;
     justify-content: center;
-    /* ALIGNMENT FIX: Centers card in slide */
 }
 
 /* --- CARD VISUALS (THE SKINS) --- */
@@ -391,28 +394,34 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.35);
+    /* A bit more icy white */
     backdrop-filter: blur(8px);
+    /* Stronger blur */
     -webkit-backdrop-filter: blur(8px);
     border-radius: 24px;
-    z-index: 10;
+    z-index: 50;
+    /* FORCES IT ON TOP OF ALL TEXT/CHIPS */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .frost-lock-icon {
     width: 64px;
     height: 64px;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 30;
+    /* Highest priority */
+    position: relative;
 }
 
 .frost-text {
@@ -420,9 +429,12 @@
     font-weight: 800;
     font-size: 14px;
     letter-spacing: 3px;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.95);
     padding: 4px 12px;
     border-radius: 12px;
+    z-index: 30;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* --- ACTION GRID (Buttons under card) --- */
@@ -684,6 +696,7 @@
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 5em;
 }
 
 .save-card-btn:disabled {

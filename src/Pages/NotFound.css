@@ -1,0 +1,135 @@
+/* src/Pages/NotFound.css */
+
+.not-found-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #F8F9FA;
+    padding: 24px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+}
+
+/* --- THE CHART ANIMATION --- */
+.chart-container {
+    width: 100%;
+    max-width: 280px;
+    height: 120px;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.chart-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* Animates the line drawing itself */
+.chart-line {
+    fill: none;
+    stroke: #0E648E;
+    /* Your Brand Blue */
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    animation: drawChart 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* The red dot at the bottom of the crash */
+.crash-dot {
+    fill: #EF4444;
+    /* Red */
+    opacity: 0;
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+    animation: popInDot 0.3s ease-out 1.4s forwards;
+}
+
+@keyframes drawChart {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes popInDot {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* --- TYPOGRAPHY & LAYOUT --- */
+.nf-title {
+    font-size: 72px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+.nf-subtitle {
+    font-size: 20px;
+    font-weight: 700;
+    color: #EF4444;
+    /* Red to match the crash */
+    margin: 12px 0 8px 0;
+}
+
+.nf-desc {
+    font-size: 14px;
+    color: #6B7280;
+    max-width: 280px;
+    margin: 0 auto 32px auto;
+    line-height: 1.5;
+}
+
+/* --- BUTTONS --- */
+.nf-actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.nf-btn {
+    flex: 1;
+    height: 52px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.nf-btn:active {
+    transform: scale(0.96);
+}
+
+.nf-btn-secondary {
+    background: white;
+    border: 1px solid #E5E7EB;
+    color: #1F2937;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.nf-btn-primary {
+    background: #111827;
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
