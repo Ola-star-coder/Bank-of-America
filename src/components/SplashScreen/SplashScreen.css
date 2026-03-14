@@ -1,0 +1,140 @@
+/* src/components/SplashScreen/SplashScreen.css */
+
+.splash-container {
+    position: fixed;
+    inset: 0;
+    background-color: #4338CA;
+    /* Bridge Indigo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    will-change: opacity, transform;
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(15px);
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Typography */
+.bridge-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: white;
+    font-size: 32px;
+    font-weight: 600;
+    margin-top: 16px;
+    opacity: 0;
+    letter-spacing: 0px;
+    transition: opacity 0.8s ease, letter-spacing 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* SVG Elements Initial State */
+.bridge-logo {
+    width: 90px;
+    height: 90px;
+}
+
+.logo-pillar {
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.logo-curve {
+    opacity: 0;
+    transform: translateX(25px);
+    transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.logo-dot {
+    opacity: 0;
+    transform: scale(0);
+    transform-origin: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- THE CHOREOGRAPHY CLASSES --- */
+
+/* Phase 1: Drop */
+.phase-drop .logo-pillar,
+.phase-connect .logo-pillar,
+.phase-text .logo-pillar,
+.phase-shimmer .logo-pillar,
+.phase-reveal .logo-pillar {
+    transform: scaleY(1);
+}
+
+/* Phase 2: Connect */
+.phase-connect .logo-curve,
+.phase-text .logo-curve,
+.phase-shimmer .logo-curve,
+.phase-reveal .logo-curve {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.phase-connect .logo-dot,
+.phase-text .logo-dot,
+.phase-shimmer .logo-dot,
+.phase-reveal .logo-dot {
+    opacity: 1;
+    transform: scale(1);
+    transition-delay: 0.4s;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+}
+
+/* Phase 3: Text */
+.phase-text .bridge-text,
+.phase-shimmer .bridge-text,
+.phase-reveal .bridge-text {
+    opacity: 1;
+    letter-spacing: 3px;
+}
+
+.phase-text,
+.phase-shimmer,
+.phase-reveal {
+    transform: translateY(-15px);
+}
+
+/* Phase 3.5: Shimmer (If Firebase is slow) */
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        opacity: 1;
+        filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+    }
+
+    50% {
+        opacity: 0.8;
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+    }
+}
+
+.phase-shimmer .bridge-logo,
+.phase-shimmer .bridge-text {
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+/* Phase 4: Smooth Fly-Through Reveal (Fixes the White Glitch) */
+@keyframes smoothExit {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.15);
+    }
+}
+
+.smooth-exit {
+    animation: smoothExit 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: none;
+}
