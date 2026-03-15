@@ -4,7 +4,6 @@
     position: fixed;
     inset: 0;
     background-color: #4338CA;
-    /* Bridge Indigo */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,13 +21,13 @@
 
 /* Typography */
 .bridge-text {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Tilt Warp", sans-serif;
     color: white;
     font-size: 32px;
-    font-weight: 600;
+    font-weight: 800;
     margin-top: 16px;
     opacity: 0;
-    letter-spacing: 0px;
+    letter-spacing: 1px;
     transition: opacity 0.8s ease, letter-spacing 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

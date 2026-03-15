@@ -125,7 +125,7 @@ const handleSearch = async () => {
               </div>
               <div className="user-details">
                   <h4>{recipient.fullName}</h4>
-                  <span>Verified • {recipient.bankName || 'Opay'}</span>
+                  <span>Verified • {recipient.bankName || 'Bridge'}</span>
               </div>
               <button onClick={() => {setRecipient(null); setAccountNum('')}} style={{marginLeft:'auto', border:'none', background:'none', color:'#EF4444'}}>
                   <X size={16}/>

@@ -23,11 +23,9 @@ import Settings from './Pages/Dashboard/Settings';
 import NotFound from './Pages/NotFound';
 import AllTransactions from './Pages/Dashboard/History/AllTransactions';
 import MyCards from './components/Cards/MyCards';
+import Welcome from './Pages/Auth/Welcome';
 
-/**
- * 1. THE INTERCEPTOR (AppContent)
- * This sits inside AuthProvider so it can listen to Firebase's 'loading' state.
- */
+
 function AppContent() {
   const { loading, user } = useAuth(); // Grab real-time Firebase status
   const [showSplash, setShowSplash] = useState(true);
@@ -43,21 +41,21 @@ function AppContent() {
   }
 
   // Check Onboarding Status (We will use this in Step 2)
-  const hasSeenOnboarding = localStorage.getItem('has_seen_onboarding');
+ const hasSeenOnboarding = localStorage.getItem('has_seen_onboarding') === 'true';
 
   return (
     <>
       <Routes>
-        {/* --- AUTH & ONBOARDING ROUTES --- */}
-        {/* NOTE: We will build /welcome and /unlock next! */}
+       <Route path="/welcome" element={<Welcome />} />
         
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
         {/* --- PROTECTED DASHBOARD ROUTES --- */}
-        <Route 
+       <Route 
           path="/" 
           element={
+            !hasSeenOnboarding ? <Navigate to="/welcome" replace /> :
             <ProtectedRoute>
               <DashboardHome />
             </ProtectedRoute>

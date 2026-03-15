@@ -1,0 +1,227 @@
+/* src/Pages/Auth/Welcome.css */
+
+/* --- MAIN CONTAINER --- */
+.welcome-slider-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    /* Crucial: Hides the off-screen slides */
+    position: relative;
+    background-color: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* --- 1. STORY PROGRESS BARS (TOP) --- */
+.story-progress-container {
+    position: absolute;
+    top: 50px;
+    /* iOS Safe Area clearance */
+    left: 24px;
+    right: 24px;
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+    /* Keeps it above the sliding content */
+}
+
+.story-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    /* Subtle light gray track */
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.story-fill {
+    height: 100%;
+    background: #111827;
+    /* Dark/Black fill color */
+    width: 0%;
+    border-radius: 4px;
+}
+
+.story-fill.completed {
+    width: 100%;
+}
+
+.story-fill.active {
+    animation: fillUp 4s linear forwards;
+    /* 4s matches the React timer */
+}
+
+@keyframes fillUp {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+/* --- 2. SKIP BUTTON --- */
+.slider-top-bar {
+    position: absolute;
+    top: 60px;
+    /* Pushed down slightly below the progress bars */
+    left: 0;
+    width: 100%;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: flex-end;
+    z-index: 50;
+}
+
+.skip-text-btn {
+    background: none;
+    border: none;
+    color: #4B5563;
+    /* Dark Gray */
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.skip-text-btn:active {
+    color: #111827;
+}
+
+/* --- 3. THE SLIDING MECHANISM --- */
+.slider-track {
+    display: flex;
+    height: 100%;
+    width: 300vw;
+    /* 100vw per slide (3 slides = 300vw) */
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    /* Physical swiping physics */
+}
+
+.slide-item {
+    width: 100vw;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- 4. TOP 60%: GRAPHIC AREA --- */
+.slide-graphic-area {
+    flex: 5.5;
+    /* Takes up ~55% of the screen height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 40px;
+    /* Extra padding so the bottom card can overlap it */
+}
+
+/* Animation for the placeholder emoji (or your future 3D image) */
+.mock-illustration-placeholder {
+    font-size: 140px;
+    animation: gentleBounce 3s infinite ease-in-out;
+}
+
+@keyframes gentleBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* --- 5. BOTTOM 40%: THE WHITE OVERLAP CARD --- */
+.slide-bottom-card {
+    flex: 4.5;
+    background: white;
+    border-radius: 32px 32px 0 0;
+    margin-top: -32px;
+    /* Pulls the white card UP over the colored background */
+    padding: 40px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.04);
+    /* Very soft shadow on top */
+}
+
+.slide-text-content h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 16px 0;
+    line-height: 1.3;
+}
+
+.slide-text-content p {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0;
+    line-height: 1.6;
+    padding: 0 10px;
+}
+
+/* --- 6. FIXED BOTTOM CONTROLS --- */
+.slider-fixed-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px 24px 48px 24px;
+    /* Extra bottom padding for iOS home bar */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    z-index: 50;
+}
+
+/* Pagination Dots */
+.pagination-dots {
+    display: flex;
+    gap: 8px;
+    /* Optional: Hide these if you prefer to only use the top story bars */
+    /* display: none; */
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: #E5E7EB;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    width: 24px;
+    /* Elongated active pill */
+    background-color: #111827;
+    /* Black */
+    border-radius: 8px;
+}
+
+/* Big Friendly CTA Button */
+.slider-primary-btn {
+    width: 100%;
+    height: 56px;
+    background-color: #111827;
+    /* Solid Black */
+    color: white;
+    border: none;
+    border-radius: 100px;
+    /* Fully rounded pill */
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+.slider-primary-btn:active {
+    transform: scale(0.96);
+    background-color: #1F2937;
+}
