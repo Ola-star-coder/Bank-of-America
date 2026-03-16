@@ -7,16 +7,15 @@
     font-family: 'Poppins', sans-serif;
     color: #111827;
 
-    /* Prevent browser from interfering with our custom swipe physics */
-    touch-action: pan-y;
+    touch-action: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
 }
 
-/* =========================================
-   2. STORY PROGRESS BARS
-   ========================================= */
 .story-progress-container {
     position: absolute;
     top: 50px;
@@ -42,14 +41,6 @@
     transition: width 0.05s linear, background-color 0.4s ease;
 }
 
-.story-fill.completed {
-    width: 100% !important;
-    transition: background-color 0.4s ease;
-}
-
-/* =========================================
-   3. SKIP BUTTON
-   ========================================= */
 .slider-top-bar {
     position: absolute;
     top: 60px;
@@ -64,8 +55,8 @@
 
 .skip-text-btn {
     pointer-events: auto;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
     padding: 8px 18px;
     border-radius: 20px;
@@ -74,27 +65,24 @@
     cursor: pointer;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    transition: background 0.2s, transform 0.1s;
 }
 
-/* =========================================
-   4. THE SLIDING MECHANISM & PHYSICS
-   ========================================= */
+.skip-text-btn:active {
+    transform: scale(0.95);
+    background: rgba(0, 0, 0, 0.6);
+}
+
 .slider-track {
     display: flex;
     height: 100%;
     width: 500vw;
-    /* Smooth transition for auto-advance or snapping back */
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    cursor: grab;
+    cursor: pointer;
 }
 
-.slider-track:active {
-    cursor: grabbing;
-}
-
-/* When the user is dragging, remove CSS transitions so it follows their finger instantly */
-.slider-track.is-dragging {
-    transition: none !important;
+.paused-filter {
+    filter: brightness(0.95);
 }
 
 .slide-item {
@@ -104,55 +92,49 @@
     flex-direction: column;
 }
 
-/* =========================================
-   5. TOP 70%: IMAGE AREA (WITH PARALLAX)
-   ========================================= */
+/* IMAGE NOW TAKES 75% OF THE SCREEN (Bigger Image) */
 .slide-graphic-area {
-    flex: 7;
+    flex: 7.5;
     position: relative;
     background-color: #111827;
     overflow: hidden;
-    /* Important for parallax */
 }
 
-/* The actual image layer that moves independently */
 .parallax-bg {
     position: absolute;
-    /* Make it slightly larger than the container so edges don't show when it moves */
-    inset: -10%;
-    width: 120%;
-    height: 120%;
+    top: 0;
+    bottom: 0;
+    left: -20%;
+    right: -20%;
+    width: 140%;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* This ensures the parallax moves smoothly when the slide changes automatically */
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* The Gradient Blend */
+/* Lighter overlay for much more vibrant images */
 .img-overlay-blend {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     background: linear-gradient(180deg,
-            rgba(0, 0, 0, 0.6) 0%,
-            rgba(0, 0, 0, 0) 25%,
-            rgba(255, 255, 255, 0) 70%,
+            rgba(0, 0, 0, 0.1) 0%,
+            rgba(0, 0, 0, 0) 20%,
+            rgba(255, 255, 255, 0) 75%,
             rgba(255, 255, 255, 1) 100%);
     z-index: 1;
     pointer-events: none;
 }
 
-/* =========================================
-   6. BOTTOM 30%: TEXT CARD
-   ========================================= */
+/* CARD NOW TAKES ONLY 25% (Pushed lower) */
 .slide-bottom-card {
-    flex: 3;
+    flex: 2.5;
     background: white;
     border-radius: 40px 40px 0 0;
     margin-top: -32px;
-    padding: 24px 24px 110px 24px;
+    padding: 24px 24px 100px 24px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -163,13 +145,13 @@
 .slide-text-content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     margin-top: -20px;
 }
 
 .slide-text-content h2 {
     font-size: 26px;
-    font-weight: 700;
+    font-weight: 800;
     color: #111827;
     margin: 0;
     line-height: 1.2;
@@ -177,16 +159,13 @@
 }
 
 .slide-text-content p {
-    font-size: 15px;
+    font-size: 14px;
     color: #6B7280;
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.4;
     padding: 0 10px;
 }
 
-/* =========================================
-   7. FIXED CTA BUTTON (BOTTOM)
-   ========================================= */
 .slider-fixed-controls {
     position: absolute;
     bottom: 0;
@@ -195,14 +174,13 @@
     padding: 24px 24px 40px 24px;
     z-index: 50;
     pointer-events: none;
-    background: linear-gradient(0deg, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(0deg, rgba(255, 255, 255, 1) 40%, rgba(255, 255, 255, 0) 100%);
 }
 
 .slider-primary-btn {
     pointer-events: auto;
     width: 100%;
     height: 56px;
-    background-color: #111827;
     color: white;
     border: none;
     border-radius: 18px;
@@ -210,7 +188,7 @@
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    transition: transform 0.1s ease, background-color 0.2s;
+    transition: transform 0.1s ease, background-color 0.4s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -218,20 +196,16 @@
 
 .slider-primary-btn:active {
     transform: scale(0.96);
-    background-color: #1F2937;
 }
 
-/* =========================================
-   8. TEXT ANIMATIONS
-   ========================================= */
 .fade-up-anim {
     opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .fade-up-delayed-anim {
     opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+    animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
 }
 
 @keyframes fadeUp {
