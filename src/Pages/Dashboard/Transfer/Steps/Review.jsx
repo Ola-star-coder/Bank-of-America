@@ -152,7 +152,7 @@ const executeTransfer = async () => {
         </div>
         <div className="detail-row">
             <span>Bank</span>
-            <span style={{textTransform:'capitalize'}}>{data.recipient.bankName || 'Citibank'}</span>
+            <span style={{textTransform:'capitalize'}}>{data.recipient.bankName || 'Bridge'}</span>
         </div>
         
         {/* --- THE TOGGLE SWITCH --- */}
