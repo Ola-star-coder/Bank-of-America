@@ -714,3 +714,102 @@ body {
     align-items: center;
     justify-content: center;
 }
+
+/* --- PHASE 3: CASHTAG SPECIFIC STYLES --- */
+
+.cashtag-phase-wrapper {
+    min-height: 50vh;
+    /* Gives it room to push the button to the bottom */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cashtag-header {
+    margin-bottom: 3rem;
+    width: 100%;
+}
+
+.cashtag-input-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.cashtag-input-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid var(--border-light);
+    padding-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+}
+
+/* This targets the wrapper when the input is focused */
+.cashtag-input-wrapper:focus-within {
+    border-bottom-color: currentColor;
+}
+
+.cashtag-prefix {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-right: 0.2rem;
+    opacity: 0.5;
+}
+
+.cashtag-giant-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: inherit;
+    width: 100%;
+    text-align: left;
+    padding: 0;
+    caret-color: var(--brand-color);
+}
+
+.cashtag-giant-input::placeholder {
+    color: var(--border-light);
+}
+
+.cashtag-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    min-height: 24px;
+    /* Prevents layout jump when empty */
+}
+
+.vibe-generator-btn {
+    background: rgba(14, 100, 142, 0.05);
+    border: 1px solid rgba(14, 100, 142, 0.1);
+    color: var(--brand-color);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.vibe-generator-btn:hover {
+    background: rgba(14, 100, 142, 0.1);
+    transform: translateY(-2px);
+}
+
+.vibe-generator-btn:active {
+    transform: translateY(0) scale(0.95);
+}

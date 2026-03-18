@@ -5,7 +5,7 @@ import './Auth.css';
 // Import our new phases
 import Phase1_Identity from './RegistrationSteps/Phase1_identity';
 import Phase2_KYC from './RegistrationSteps/Phase2_KYC';
-// import Phase3_Vault from './RegistrationSteps/Phase3_Vault';
+import Phase3_Vault from './RegistrationSteps/Phase3_Vault';
 // import Phase4_Security from './RegistrationSteps/Phase4_Security';
 
 const Register = () => {
@@ -61,7 +61,7 @@ const Register = () => {
         {currentPhase === 2 && <Phase2_KYC formData={formData} setFormData={setFormData} nextPhase={nextPhase} />}
         
         {/* We will build these next! */}
-        {currentPhase === 3 && <div>Phase 3: Vault Setup (Coming Next) <button onClick={nextPhase}>Skip for now</button></div>}
+        {currentPhase === 3 && <Phase3_Vault formData={formData} setFormData={setFormData} nextPhase={nextPhase} />}
         {currentPhase === 4 && <div>Phase 4: Security PIN (Coming Soon)</div>}
 
         {currentPhase === 1 && (
