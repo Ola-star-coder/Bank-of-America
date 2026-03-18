@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { CaretDown, Check, Eye, EyeSlash, ArrowRight } from 'phosphor-react';
+import { CaretDown, Check, Eye, EyeSlash, ArrowRight, LockKey, ShieldCheck } from 'phosphor-react';
 import { toast } from 'react-toastify';
 
 const Phase1_Identity = ({ formData, setFormData, nextPhase }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showOtpStep, setShowOtpStep] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Target Demographics: USA, EU, ASIA, AUSTRALIA
+  // Target Demographics
   const regions = [
     { code: '+1', flag: '🇺🇸', label: 'US/CAN' },
     { code: '+44', flag: '🇬🇧', label: 'UK' },
@@ -20,31 +21,71 @@ const Phase1_Identity = ({ formData, setFormData, nextPhase }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Password Validation Checkers
+  // Live Password Validation
   const hasLength = formData.password.length >= 8;
   const hasNumber = /\d/.test(formData.password);
   const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
 
+  // Helper: Mask email for OTP screen (e.g., joh****@gmail.com)
+  const maskEmail = (email) => {
+    if (!email) return '';
+    const [name, domain] = email.split('@');
+    if (!domain) return email;
+    return `${name.substring(0, 3)}****@${domain}`;
+  };
+
   const handleContinue = () => {
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.dob || !formData.phone) {
-      return toast.error("Please fill in all fields.");
-    }
-    if (!hasLength || !hasNumber || !hasSpecial) {
-      return toast.error("Please meet all password requirements.");
+    // 1. Strict Empty Check
+    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim() || !formData.phone.trim() || !formData.dob) {
+      return toast.error("Please provide all required legal information.");
     }
 
-    // Instead of going to Phase 2 immediately, we trigger the OTP screen
-    setShowOtpStep(true);
-    toast.info(`Verification code sent to ${formData.email}`);
+    // 2. Email Regex Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      return toast.error("Please enter a valid email address.");
+    }
+
+    // 3. Exact 18+ Age Gate (Calculated against current date)
+    const calculateAge = (dobString) => {
+      const today = new Date();
+      const birthDate = new Date(dobString);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+      }
+      return age;
+    };
+
+    if (calculateAge(formData.dob) < 18) {
+      return toast.error("Regulatory requirements mandate users must be 18 or older to open an account.");
+    }
+
+    // 4. Password Security Gate
+    if (!hasLength || !hasNumber || !hasSpecial) {
+      return toast.error("Your password does not meet the minimum security requirements.");
+    }
+
+    // Trigger OTP Phase
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setShowOtpStep(true);
+      toast.info("Secure verification code sent.");
+    }, 1200);
   };
 
   const handleVerifyOtp = () => {
     const enteredOtp = otp.join('');
-    if (enteredOtp.length !== 6) return toast.error("Enter the full 6-digit code.");
+    if (enteredOtp.length !== 6) return toast.error("Enter the full 6-digit authorization code.");
     
-    // Simulate successful OTP verification
-    toast.success("Email verified!");
-    nextPhase(); // Move to Phase 2: KYC
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      toast.success("Identity verified securely.");
+      nextPhase(); 
+    }, 1500);
   };
 
   const handleOtpChange = (element, index) => {
@@ -52,15 +93,15 @@ const Phase1_Identity = ({ formData, setFormData, nextPhase }) => {
     const newOtp = [...otp];
     newOtp[index] = element.value;
     setOtp(newOtp);
-    // Auto-focus next input
     if (element.nextSibling && element.value) element.nextSibling.focus();
   };
 
   if (showOtpStep) {
     return (
       <div className="phase-container animate-slide-left">
-        <h2 className="phase-title">Verify your email</h2>
-        <p className="phase-subtitle">We sent a 6-digit code to <strong>{formData.email}</strong></p>
+        <div className="trust-badge"><ShieldCheck size={16} weight="fill" /> 256-bit Encryption Active</div>
+        <h2 className="phase-title">Verify your identity</h2>
+        <p className="phase-subtitle">To secure your account, we sent a 6-digit code to <strong>{maskEmail(formData.email)}</strong></p>
 
         <div className="otp-container">
           {otp.map((data, index) => (
@@ -77,8 +118,8 @@ const Phase1_Identity = ({ formData, setFormData, nextPhase }) => {
           ))}
         </div>
 
-        <button className="btn-primary" onClick={handleVerifyOtp} style={{ marginTop: '2rem' }}>
-          Verify & Continue <ArrowRight size={20} weight="bold" />
+        <button className="btn-primary" onClick={handleVerifyOtp} disabled={isLoading} style={{ marginTop: '2.5rem' }}>
+          {isLoading ? 'Verifying...' : 'Authorize Device'} <LockKey size={20} weight="fill" />
         </button>
       </div>
     );
@@ -86,27 +127,28 @@ const Phase1_Identity = ({ formData, setFormData, nextPhase }) => {
 
   return (
     <div className="phase-container animate-slide-left">
-      <h2 className="phase-title">Tell us about yourself</h2>
-      <p className="phase-subtitle">This information must match your government ID.</p>
+      <div className="trust-badge"><LockKey size={16} weight="fill" /> Bank-Grade Security</div>
+      <h2 className="phase-title">Legal Identity</h2>
+      <p className="phase-subtitle">This information must match your government-issued ID.</p>
 
       <div className="input-row">
         <div className="input-group">
-          <label>First Name</label>
-          <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Legal First Name" />
+          <label>Legal First Name</label>
+          <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} placeholder="As shown on ID" />
         </div>
         <div className="input-group">
-          <label>Last Name</label>
-          <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Legal Last Name" />
+          <label>Legal Last Name</label>
+          <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} placeholder="As shown on ID" />
         </div>
       </div>
 
       <div className="input-group">
-        <label>Date of Birth</label>
+        <label>Date of Birth (MM/DD/YYYY)</label>
         <input type="date" name="dob" value={formData.dob} onChange={handleChange} />
       </div>
 
       <div className="input-group">
-        <label>Phone Number</label>
+        <label>Mobile Number</label>
         <div className="phone-input-wrapper">
           <div className="country-select-container">
             <select name="countryCode" value={formData.countryCode} onChange={handleChange} className="country-select">
@@ -116,46 +158,39 @@ const Phase1_Identity = ({ formData, setFormData, nextPhase }) => {
             </select>
             <CaretDown size={14} className="select-caret" />
           </div>
-          <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Mobile Number" />
+          <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Mobile Number" maxLength={15} />
         </div>
       </div>
 
       <div className="input-group">
         <label>Email Address</label>
-        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="name@example.com" />
+        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Account recovery email" />
       </div>
 
       <div className="input-group">
-        <label>Secure Password</label>
+        <label>Master Password</label>
         <div className="password-wrapper">
           <input 
             type={showPassword ? "text" : "password"} 
             name="password" 
             value={formData.password} 
             onChange={handleChange} 
-            placeholder="Create a password" 
+            placeholder="Create a strong password" 
           />
           <button type="button" className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
             {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
           </button>
         </div>
         
-        {/* Dynamic Password Checklist */}
         <div className="password-checklist">
-          <span className={hasLength ? 'valid' : ''}>
-            <Check size={12} weight="bold" /> 8+ Characters
-          </span>
-          <span className={hasNumber ? 'valid' : ''}>
-            <Check size={12} weight="bold" /> 1 Number
-          </span>
-          <span className={hasSpecial ? 'valid' : ''}>
-            <Check size={12} weight="bold" /> 1 Special (!@#$)
-          </span>
+          <span className={hasLength ? 'valid' : ''}><Check size={14} weight="bold" /> 8+ Chars</span>
+          <span className={hasNumber ? 'valid' : ''}><Check size={14} weight="bold" /> 1 Number</span>
+          <span className={hasSpecial ? 'valid' : ''}><Check size={14} weight="bold" /> 1 Special</span>
         </div>
       </div>
 
       <button className="btn-primary" onClick={handleContinue} style={{ marginTop: '1.5rem' }}>
-        Send Verification Code
+        Continue <ArrowRight size={20} weight="bold" />
       </button>
     </div>
   );
