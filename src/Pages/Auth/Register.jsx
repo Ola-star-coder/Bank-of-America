@@ -2,34 +2,35 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Auth.css'; 
 
-// Import our new phases
+// Import all our active phases
 import Phase1_Identity from './RegistrationSteps/Phase1_identity';
 import Phase2_KYC from './RegistrationSteps/Phase2_KYC';
 import Phase3_Vault from './RegistrationSteps/Phase3_Vault';
+import Phase3b_CardDesign from './RegistrationSteps/Phase3b_CardDesign';
 // import Phase4_Security from './RegistrationSteps/Phase4_Security';
 
 const Register = () => {
   const [currentPhase, setCurrentPhase] = useState(1);
   
-  // The Master State Object - Holds everything until Step 4
+  // The Master State Object - Holds everything until the final submission
   const [formData, setFormData] = useState({
     // Phase 1
     firstName: '', lastName: '', dob: '', countryCode: '+1', phone: '', email: '', password: '',
-    // Phase 2 (USA)
-    ssn: '', address: '', city: '', state: '', zip: '', occupation: '', purpose: '', sourceOfFunds: '',
-    // Phase 2 (Intl)
-    idNumber: '',
-    // Phase 3 & 4
-    cashtag: '', cardSkin: 'silver-card', transactionPin: ''
+    // Phase 2 (USA & Intl)
+    ssn: '', address: '', city: '', state: '', zip: '', occupation: '', purpose: '', sourceOfFunds: '', idNumber: '',
+    // Phase 3a & 3b
+    cashtag: '', cardSkin: 'apple-mesh', 
+    // Phase 4
+    transactionPin: ''
   });
 
   const nextPhase = () => setCurrentPhase(prev => prev + 1);
   const prevPhase = () => setCurrentPhase(prev => prev - 1);
 
-  // The Top Progress Bar
+  // The Top Progress Bar (Now updated to 5 segments to match our flow)
   const renderProgressBar = () => (
     <div className="story-progress-container" style={{ position: 'relative', top: 0, left: 0, right: 0, marginBottom: '2rem' }}>
-      {[1, 2, 3, 4].map(step => (
+      {[1, 2, 3, 4, 5].map(step => (
         <div key={step} className="story-track" style={{ background: '#E5E7EB' }}>
           <div 
             className="story-fill" 
@@ -56,14 +57,16 @@ const Register = () => {
            {renderProgressBar()}
         </header>
 
-        {/* Phase Routing */}
+        {/* --- THE ROUTER --- */}
         {currentPhase === 1 && <Phase1_Identity formData={formData} setFormData={setFormData} nextPhase={nextPhase} />}
         {currentPhase === 2 && <Phase2_KYC formData={formData} setFormData={setFormData} nextPhase={nextPhase} />}
-        
-        {/* We will build these next! */}
         {currentPhase === 3 && <Phase3_Vault formData={formData} setFormData={setFormData} nextPhase={nextPhase} />}
-        {currentPhase === 4 && <div>Phase 4: Security PIN (Coming Soon)</div>}
+        {currentPhase === 4 && <Phase3b_CardDesign formData={formData} setFormData={setFormData} nextPhase={nextPhase} />}
+        
+        {/* The Final Boss (Coming Next) */}
+        {currentPhase === 5 && <div>Phase 4: Security PIN Vault (Coming Next)</div>}
 
+        {/* Only show login prompt on the very first screen */}
         {currentPhase === 1 && (
           <div className="login-prompt">
              Already have an account? <Link to="/login">Log in</Link>
