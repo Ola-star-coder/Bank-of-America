@@ -142,7 +142,7 @@ const Login = () => {
         {/* Footer Links */}
         {!returningUser && (
           <div className="login-prompt">
-              Don't have an account? <Link to="/register">Create one</Link>
+              Don't have an account? <Link to="/onboarding">Create one</Link>
           </div>
         )}
       </div>

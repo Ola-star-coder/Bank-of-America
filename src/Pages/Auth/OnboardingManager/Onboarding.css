@@ -1,0 +1,327 @@
+.onboarding-wrapper {
+    /* 100dvh adapts perfectly to mobile browser address bars popping in/out */
+    min-height: 100dvh;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Poppins', -apple-system, sans-serif;
+    position: relative;
+}
+
+/* --- THE TOP NAV --- */
+.onboarding-top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    flex-shrink: 0;
+    /* Prevents nav from squishing */
+}
+
+.ob-back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    margin-left: -0.5rem;
+    color: #111827;
+    transition: transform 0.2s ease;
+}
+
+.ob-back-btn:active {
+    transform: translateX(-0.25rem);
+}
+
+.ob-help-btn {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* --- THE MAIN CONTENT AREA --- */
+.onboarding-content {
+    flex: 1 1 auto;
+    /* Takes up all available space */
+    overflow-y: auto;
+    /* Allows scrolling if content is super long */
+    padding: 1rem 1.5rem;
+    /* Massive bottom padding so content never hides behind the fixed button */
+    padding-bottom: 8rem;
+    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ob-title {
+    font-size: 1.75rem;
+    /* ~28px */
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.5em 0;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+}
+
+.ob-subtitle {
+    font-size: 0.9375rem;
+    /* ~15px */
+    color: #6B7280;
+    margin: 0 0 2em 0;
+    line-height: 1.5;
+}
+
+/* --- THE BOTTOM ACTION BAR --- */
+.bottom-action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    /* env(safe-area-inset-bottom) respects the iPhone home indicator line */
+    padding: 1rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom));
+    /* Solid white at the bottom, fading to transparent at the top */
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.9) 20%, #FFFFFF 50%, #FFFFFF 100%);
+    display: flex;
+    gap: 0.75rem;
+    z-index: 100;
+}
+
+/* The Cash App Style Button */
+.ob-next-btn {
+    flex: 1;
+    height: 3.5rem;
+    /* ~56px */
+    background-color: #111827;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 2rem;
+    /* Pill shape */
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ob-next-btn:active {
+    transform: scale(0.97);
+}
+
+.ob-next-btn:disabled {
+    background-color: #E5E7EB;
+    color: #9CA3AF;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Animations */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(1.5rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* --- PREMIUM INPUT STYLES --- */
+.ob-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.75rem;
+    padding: 0.25rem;
+    margin-top: 2rem;
+    background-color: #FFFFFF;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    /* FIX: Prevent the container from growing */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ob-input-group:focus-within {
+    border-color: #111827;
+    /* Subtle shadow to make it pop like a modern app */
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.05);
+}
+
+/* Vertical line separating country code and input */
+.input-divider {
+    width: 1px;
+    height: 1.5rem;
+    background-color: #E5E7EB;
+    margin: 0 0.5rem;
+}
+
+.ob-input-field {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    padding: 1rem 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #111827;
+    background: transparent;
+    /* FIX: Prevent text from going outside the box */
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.ob-input-field.email-mode {
+    padding: 1rem 1rem;
+}
+
+/* --- CUSTOM DROPDOWN --- */
+.custom-dropdown-container {
+    position: relative;
+}
+
+.dropdown-trigger {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.5rem 0.75rem 1rem;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: background-color 0.1s;
+    width: 6.5rem;
+    flex-shrink: 0;
+}
+
+.dropdown-trigger:active {
+    background-color: #F3F4F6;
+}
+
+.flag-emoji {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.code-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* The Invisible Overlay */
+.dropdown-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+/* The Floating Menu */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    z-index: 1001;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #F3F4F6;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.1s;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover,
+.dropdown-item:active {
+    background-color: #F9FAFB;
+}
+
+.country-name {
+    font-size: 0.875rem;
+    color: #6B7280;
+    font-weight: 500;
+    margin-left: auto;
+    /* Pushes the name to the right edge */
+}
+
+/* --- THE SECONDARY BUTTON FIX --- */
+.ob-secondary-btn {
+    flex: 1;
+    height: 3.5rem;
+    background-color: #F3F4F6;
+    /* The Cash App light gray */
+    color: #111827;
+    /* Dark text */
+    border: none;
+    border-radius: 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ob-secondary-btn:active {
+    transform: scale(0.97);
+    background-color: #E5E7EB;
+    /* Slightly darker gray on press */
+}
+
+.ob-help-link {
+    background: none;
+    border: none;
+    color: #111827;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: underline;
+    margin-top: 2rem;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+}
+
+/* Smooth Fade In */
+.animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

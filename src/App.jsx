@@ -15,7 +15,7 @@ import SplashScreen from './components/SplashScreen/SplashScreen'; // NEW: Our G
 
 // Pages
 import Login from './Pages/Auth/Login';
-import Register from './Pages/Auth/Register';
+import OnboardingManager from './Pages/Auth/OnboardingManager/OnboardingManager';
 import DashboardHome from './Pages/Dashboard/Home';
 import Transfer from './Pages/Dashboard/Transfer/Transfer';
 import BankTransfer from './Pages/Dashboard/Transfer/BankTransfer';
@@ -49,7 +49,7 @@ function AppContent() {
        <Route path="/welcome" element={<Welcome />} />
         
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+       <Route path="/onboarding" element={<OnboardingManager />} />
         
         {/* --- PROTECTED DASHBOARD ROUTES --- */}
        <Route 
