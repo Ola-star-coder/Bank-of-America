@@ -4,6 +4,7 @@ import { CaretLeft } from 'phosphor-react';
 import './Onboarding.css';
 
 import PhoneOrEmail from './Steps/PhoneOrEmail';
+import VerifyOtp from './Steps/VerifyOtp';
 
 const OnboardingManager = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const OnboardingManager = () => {
   // THE MASTER STATE: This holds EVERYTHING until the final database write
   const [onboardingData, setOnboardingData] = useState({
     phoneOrEmail: '',
+    confirmationResult: null,
     legalFirstName: '',
     legalLastName: '',
     dob: '',
@@ -52,14 +54,12 @@ const OnboardingManager = () => {
             onNext={handleNext} 
           />
         );
-      case 2:
+       case 2:
         return (
-          <div className="onboarding-content">
-            <h1 className="ob-title">What's your legal name?</h1>
-            <div style={{ marginTop: '1.5rem', padding: '1.5rem', border: '1px solid #E5E7EB', borderRadius: '0.75rem' }}>
-               [ Step 2: Legal Name Component Will Go Here ]
-            </div>
-          </div>
+          <VerifyOtp 
+            data={onboardingData} 
+            onNext={handleNext} 
+          />
         );
       // We will add case 3, 4, 5... here as we build them
       default:

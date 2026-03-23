@@ -1,32 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CaretDown, CircleNotch } from 'phosphor-react';
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'; 
+import { auth } from '../../../../Firebase/config'; // Ensure this path is correct!
+import { toast } from 'react-toastify';
 import '../Onboarding.css';
 
 const PhoneOrEmail = ({ data, updateData, onNext }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [inputType, setInputType] = useState('phone'); // 'phone' or 'email'
-  
+  const [inputType, setInputType] = useState('phone'); 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Added exact max lengths for strict input blocking
+  // Exact max lengths for strict input blocking + Flags
   const countries = [
     { code: '+1', flag: '🇺🇸', name: 'USA', max: 10 },
     { code: '+44', flag: '🇬🇧', name: 'UK', max: 10 },
     { code: '+61', flag: '🇦🇺', name: 'AUS', max: 9 },
     { code: '+1', flag: '🇨🇦', name: 'CAN', max: 10 },
     { code: '+49', flag: '🇩🇪', name: 'GER', max: 11 },
-    { code: '+234', flag: '🇳🇬', name: 'NGA', max: 11 }
+    { code: '+234', flag: '🇳🇬', name: 'NGA', max: 10 } // Standard Nigerian mobile is 10 digits after +234
   ];
   
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [inputValue, setInputValue] = useState('');
 
-  // Validation
+  // 1. Initialize Firebase Invisible reCAPTCHA
+  useEffect(() => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: (response) => {
+          // reCAPTCHA solved automatically
+        }
+      });
+    }
+  }, []);
+
+  // 2. Strict Validation Check
   const isValid = inputType === 'phone' 
-    ? inputValue.length === selectedCountry.max // Must be EXACTLY the right length
+    ? inputValue.length === selectedCountry.max 
     : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputValue);
 
-  // The Bouncer: Forces numbers only & strict length limits
+  // 3. The Bouncer: Forces numbers only & strict length limits
   const handleInputChange = (e) => {
     let val = e.target.value;
     
@@ -40,6 +54,7 @@ const PhoneOrEmail = ({ data, updateData, onNext }) => {
     setInputValue(val);
   };
 
+  // 4. Handle Submit & Firebase SMS
   const handleNextClick = async () => {
     if (!isValid) return;
     setIsLoading(true);
@@ -50,10 +65,33 @@ const PhoneOrEmail = ({ data, updateData, onNext }) => {
 
     updateData('phoneOrEmail', finalValue);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      onNext();
-    }, 1000);
+    if (inputType === 'phone') {
+      try {
+        const appVerifier = window.recaptchaVerifier;
+        // Trigger Firebase SMS
+        const confirmationResult = await signInWithPhoneNumber(auth, finalValue, appVerifier);
+        
+        // Save the confirmation object to our master state
+        updateData('confirmationResult', confirmationResult);
+        
+        setIsLoading(false);
+        onNext(); // Slide to Step 2
+      } catch (error) {
+        console.error("SMS Error:", error);
+        toast.error("Failed to send code. Check number or try again later.");
+        setIsLoading(false);
+        // Reset recaptcha if it fails so they can try again safely
+        if (window.recaptchaVerifier) {
+            window.recaptchaVerifier.render().then(id => grecaptcha.reset(id));
+        }
+      }
+    } else {
+      // Mock flow for Email (since Firebase Email OTP requires custom backend/extensions usually)
+      setTimeout(() => {
+        setIsLoading(false);
+        onNext();
+      }, 1000);
+    }
   };
 
   const toggleInputType = () => {
@@ -66,9 +104,13 @@ const PhoneOrEmail = ({ data, updateData, onNext }) => {
       <div className="onboarding-content">
         <h1 className="ob-title">Enter your {inputType === 'phone' ? 'phone' : 'email'}</h1>
         
+        {/* Invisible reCAPTCHA container for Firebase */}
+        <div id="recaptcha-container"></div>
+
         <div className="ob-input-group">
           {inputType === 'phone' ? (
             <>
+              {/* Custom Premium Dropdown */}
               <div className="custom-dropdown-container">
                 <button 
                   className="dropdown-trigger" 
@@ -76,7 +118,6 @@ const PhoneOrEmail = ({ data, updateData, onNext }) => {
                 >
                   <span className="flag-emoji">{selectedCountry.flag}</span>
                   <span className="code-text">{selectedCountry.code}</span>
-                  {/* Caret is pushed to the right to keep widths consistent */}
                   <CaretDown size={14} weight="bold" color="#6B7280" style={{ marginLeft: 'auto' }} />
                 </button>
 
@@ -122,7 +163,7 @@ const PhoneOrEmail = ({ data, updateData, onNext }) => {
               className="ob-input-field email-mode"
               value={inputValue}
               onChange={handleInputChange}
-              maxLength={254} /* Standard email max length */
+              maxLength={254}
               autoFocus
             />
           )}
@@ -131,6 +172,7 @@ const PhoneOrEmail = ({ data, updateData, onNext }) => {
         <button className="ob-help-link">Need help logging in?</button>
       </div>
 
+      {/* Bottom Action Bar */}
       <div className="bottom-action-bar">
         <button className="ob-secondary-btn" onClick={toggleInputType}>
           Use {inputType === 'phone' ? 'Email' : 'Phone'}
