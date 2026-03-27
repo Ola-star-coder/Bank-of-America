@@ -16,29 +16,31 @@ const WelcomeSuccess = ({ data }) => {
       try {
         let user = auth.currentUser;
 
-        // 1. CREATE AUTH USER (If they used EmailJS, they don't have an auth profile yet!)
         if (!user) {
-          // Firebase requires 6 chars for a password. We use their PIN + a secret salt
           const securePassword = `${data.pin}Bridge!`; 
-          const cred = await createUserWithEmailAndPassword(auth, data.phoneOrEmail, securePassword);
+          
+          // FIX: If they used a phone number, make it look like an email so Firebase accepts it
+          let authEmail = data.phoneOrEmail;
+          if (!authEmail.includes('@')) {
+            authEmail = `${authEmail.replace(/[^0-9]/g, '')}@bridge.temp`;
+          }
+
+          const cred = await createUserWithEmailAndPassword(auth, authEmail, securePassword);
           user = cred.user;
         }
 
-        // 2. UPDATE PROFILE NAME
         const fullName = `${data.legalFirstName} ${data.legalLastName}`;
         await updateProfile(user, { displayName: fullName });
 
-        // 3. GENERATE BANK DETAILS
         const accountNumber = '30' + Math.floor(10000000 + Math.random() * 90000000).toString();
 
-        // 4. WRITE THE MASSIVE PAYLOAD TO FIRESTORE
         await setDoc(doc(db, "users", user.uid), {
           uid: user.uid,
           emailOrPhone: data.phoneOrEmail,
           fullName: fullName,
           dob: data.dob,
-          country: data.countryCode,
-          currency: data.currency,
+          country: data.countryCode || 'US',
+          currency: data.currency || 'USD',
           address: {
             line1: data.addressLine || '',
             city: data.city || '',
@@ -52,31 +54,31 @@ const WelcomeSuccess = ({ data }) => {
           wantsPhysicalCard: data.wantsPhysicalCard || false,
           contactsSynced: data.contactsSynced || false,
           accountNumber: accountNumber,
-          balance: 50000.00, // Dummy seed money!
+          balance: 50000.00, 
           isMainFrozen: false,
           isVerified: true,
           createdAt: new Date().toISOString(),
           transactions: [],
-          cards: [] // They can generate virtual cards in the dashboard
+          cards: [] 
         });
 
-        // 5. CLEANUP & ROUTE
         setIsDone(true);
         setTimeout(() => {
           sessionStorage.removeItem('ob_data');
           sessionStorage.removeItem('ob_step');
           localStorage.setItem('has_seen_onboarding', 'true');
-          navigate('/'); // Boom. Welcome to the Dashboard.
+          navigate('/'); 
         }, 1500);
 
       } catch (error) {
         console.error("Account Creation Error:", error);
-        toast.error("Failed to finalize account. Please try again.");
+        // FIX: Now it will tell you EXACTLY what failed in the red toast
+        toast.error(`Failed: ${error.message}`); 
       }
     };
 
     createAccount();
-  }, []); // Run exactly once on mount
+  }, []); 
 
   return (
     <div className="onboarding-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100dvh', paddingBottom: 0 }}>
