@@ -8,14 +8,13 @@ const VerifyOTP = ({ data, onNext }) => {
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef(null);
 
-  // Auto-focus the input on load
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
   }, []);
 
   const handleInputChange = (e) => {
-    let val = e.target.value.replace(/\D/g, ''); // Numbers only
-    if (val.length > 6) val = val.slice(0, 6); // Max 6 digits
+    let val = e.target.value.replace(/\D/g, ''); 
+    if (val.length > 6) val = val.slice(0, 6); 
     setCode(val);
   };
 
@@ -23,35 +22,39 @@ const VerifyOTP = ({ data, onNext }) => {
     if (code.length !== 6) return;
     setIsLoading(true);
 
+    // --- 1. EMAILJS OTP VERIFICATION ---
+    if (data.expectedOtp) {
+      setTimeout(() => { // Artificial delay to feel secure
+        setIsLoading(false);
+        if (code === data.expectedOtp.toString()) {
+            onNext();
+        } else {
+            toast.error("Incorrect code. Please try again.");
+            setCode('');
+        }
+      }, 1000);
+      return; // Exit early so it doesn't run Firebase
+    }
+
+    // --- 2. FIREBASE SMS VERIFICATION (For the future) ---
     if (data.confirmationResult) {
-      // --- REAL FIREBASE VERIFICATION ---
       try {
         const result = await data.confirmationResult.confirm(code);
-        // If we get here, the code was correct! 
-        // Note: Firebase just authenticated the user in the background.
         setIsLoading(false);
         onNext();
       } catch (error) {
         console.error("OTP Error:", error);
         toast.error("Incorrect code. Please try again.");
         setIsLoading(false);
-        setCode(''); // Clear so they can try again
+        setCode(''); 
       }
     } else {
-      // Fallback for Email mock
-      setTimeout(() => {
-        setIsLoading(false);
-        if (code === '123456') { // Mock correct code
-            onNext();
-        } else {
-            toast.error("Incorrect code (Hint: use 123456)");
-            setCode('');
-        }
-      }, 1000);
+      setIsLoading(false);
+      toast.error("Verification session expired. Please go back.");
     }
   };
 
-  // Auto-submit when 6 digits are entered (Cash App does this!)
+  // Auto-submit when 6 digits are entered
   useEffect(() => {
     if (code.length === 6) {
       handleVerify();
@@ -61,17 +64,23 @@ const VerifyOTP = ({ data, onNext }) => {
   return (
     <>
       <div className="onboarding-content">
-        <h1 className="ob-title">Please enter the code sent to {data.phoneOrEmail}</h1>
+        <h1 className="ob-titlel">Please enter the code sent to {data.phoneOrEmail}</h1>
         
         <div className="ob-input-group" style={{ marginTop: '2rem' }}>
           <input 
             ref={inputRef}
             type="tel" 
-            placeholder="Confirmation Code" 
-            className="ob-input-field email-mode" /* Reuse padding style */
+            placeholder="- - - - - -" 
+            className="ob-input-field email-mode" 
             value={code}
             onChange={handleInputChange}
-            style={{ letterSpacing: '8px', fontSize: '1.25rem', textAlign: 'center' }}
+            style={{ 
+                letterSpacing: code.length > 0 ? '1rem' : '0.5rem', 
+                fontSize: '1.5rem', 
+                fontWeight: '700',
+                textAlign: 'center',
+                backgroundColor: 'transparent'
+            }}
           />
         </div>
 
