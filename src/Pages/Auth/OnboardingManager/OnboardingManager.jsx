@@ -12,7 +12,7 @@ import HomeAddress from './Steps/HomeAddress';
 import DynamicKYC from './Steps/DynamicKYC';
 import AddDebitCard from './Steps/AddDebitCard';
 import Linking from './Steps/Linking';
-import Cashtag from './Steps/Cashtag';
+import Cashtag from './Steps/CashTag';
 import PinSetup from './Steps/PinSetup';
 import MeetCard from './Steps/MeetCard';
 import SyncContacts from './Steps/SyncContact';
