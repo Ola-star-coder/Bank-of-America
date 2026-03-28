@@ -1,76 +1,117 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
-import { Eye, EyeSlash, CircleNotch, UserCircle, X } from 'phosphor-react';
+import { CircleNotch, UserCircle, X } from 'phosphor-react';
+import emailjs from '@emailjs/browser';
 import { toast } from 'react-toastify';
 import './Auth.css'; 
 
 const Login = () => {
+  const [step, setStep] = useState(1); // 1 = Email, 2 = OTP
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [expectedOtp, setExpectedOtp] = useState(null);
   const [loading, setLoading] = useState(false);
   
-  // State for "Smart Login"
-  const [returningUser, setReturningUser] = useState(null); // Stores { name, email } if found
-
+  const [returningUser, setReturningUser] = useState(null); 
   const { login } = useAuth(); 
   const navigate = useNavigate();
+  const inputRef = useRef(null);
 
-  // 1. Check for saved user on load
   useEffect(() => {
     const savedData = localStorage.getItem('last_user_data');
     if (savedData) {
       const parsed = JSON.parse(savedData);
       setReturningUser(parsed);
-      setEmail(parsed.email); // Pre-fill email logic
+      setEmail(parsed.email); 
     }
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Focus OTP input when step changes
+  useEffect(() => {
+    if (step === 2 && inputRef.current) inputRef.current.focus();
+  }, [step]);
+
+  // Step 1: Send OTP via EmailJS
+  const handleSendCode = async (e) => {
+    e?.preventDefault();
+    if (!email) return;
     setLoading(true);
 
+    const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+    setExpectedOtp(generatedCode);
+
     try {
-      // 2. Perform Login
-      const userCredential = await login(email, password);
-      const user = userCredential.user;
-
-      // 3. Save User Data for NEXT time (The "Smart" part)
-      // We assume user.displayName is set. If not, fallback to email prefix.
-      const firstName = user.displayName ? user.displayName.split(' ')[0] : 'User';
-      
-      localStorage.setItem('last_user_data', JSON.stringify({
-        email: user.email,
-        name: firstName
-      }));
-
-      toast.success("Login Successful");
-      navigate('/'); 
+      await emailjs.send(
+        'service_lsaa5zn', 
+        'template_57qj5en', 
+        {
+          to_email: email,
+          passcode: generatedCode,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        }, 
+        'OMSN3FksAD0oEh-JW'
+      );
+      toast.success("Verification code sent!");
+      setStep(2);
     } catch (err) {
       console.error(err);
-      toast.error('Invalid credentials. Please try again.');
+      toast.error("Failed to send code. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Helper to switch to a different account
+  // Step 2: Verify OTP and Login
+  const handleVerifyOtp = async () => {
+    if (otp.length !== 6) return;
+    setLoading(true);
+
+    if (otp === expectedOtp) {
+      try {
+        // Reconstruct the hidden password!
+        const hiddenAuthPassword = `Bridge_Auth_2026_${email}!`; 
+        
+        const userCredential = await login(email, hiddenAuthPassword);
+        const user = userCredential.user;
+
+        const firstName = user.displayName ? user.displayName.split(' ')[0] : 'User';
+        localStorage.setItem('last_user_data', JSON.stringify({ email: user.email, name: firstName }));
+
+        toast.success("Welcome back!");
+        navigate('/'); 
+      } catch (err) {
+        console.error(err);
+        toast.error('Account not found. Please create an account.');
+        setStep(1);
+        setOtp('');
+      }
+    } else {
+      toast.error("Incorrect code.");
+      setOtp('');
+    }
+    setLoading(false);
+  };
+
+  // Auto-verify when 6 digits are typed
+  useEffect(() => {
+    if (otp.length === 6) handleVerifyOtp();
+  }, [otp]);
+
   const handleSwitchAccount = () => {
     localStorage.removeItem('last_user_data');
     setReturningUser(null);
     setEmail('');
-    setPassword('');
+    setStep(1);
+    setOtp('');
   };
 
   return (
     <div className="auth-container page-fade">
       <div className="auth-content">
         
-        {/* HEADER LOGIC */}
         <header className="auth-header">
-           {returningUser ? (
-             // RETURNING USER HEADER
+           {returningUser && step === 1 ? (
              <div className="welcome-back-header">
                <div className="avatar-circle">
                  <UserCircle size={48} weight="light" color="#2563EB" />
@@ -84,65 +125,57 @@ const Login = () => {
                </div>
              </div>
            ) : (
-             // STANDARD HEADER
              <>
-               <Link to="/" className="back-arrow">←</Link>
-               <h1>Log in</h1>
-               <p>Securely access your global account.</p>
+               {step === 1 ? (
+                 <Link to="/" className="back-arrow">←</Link>
+               ) : (
+                 <button onClick={() => setStep(1)} className="back-arrow" style={{background:'none', border:'none', cursor:'pointer'}}>←</button>
+               )}
+               <h1>{step === 1 ? 'Log in' : 'Enter code'}</h1>
+               <p>{step === 1 ? 'Securely access your global account.' : `Sent to ${email}`}</p>
              </>
            )}
         </header>
 
-        <form onSubmit={handleSubmit}>
-          
-          {/* Email Input - ONLY SHOW IF NOT RETURNING USER */}
-          {!returningUser && (
-            <div className="input-group">
-              <label>Email Address</label>
-              <input 
-                type="email" 
-                placeholder="name@example.com" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required 
-              />
-            </div>
-          )}
-
-          {/* Password Input - ALWAYS SHOW */}
-          <div className="input-group">
-            <label>Password</label>
-            <div className="password-wrapper">
-              <input 
-                type={showPassword ? "text" : "password"} 
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required 
-              />
-              <button 
-                type="button" 
-                className="eye-icon"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+        {step === 1 ? (
+          <form onSubmit={handleSendCode}>
+            {!returningUser && (
+              <div className="input-group">
+                <label>Email Address</label>
+                <input 
+                  type="email" 
+                  placeholder="name@example.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required 
+                />
+              </div>
+            )}
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? <CircleNotch size={24} className="spinner-animate" /> : 'Send Code'}
+            </button>
+          </form>
+        ) : (
+          <div>
+             <div className="input-group" style={{ textAlign: 'center' }}>
+                <input 
+                  ref={inputRef}
+                  type="tel" 
+                  placeholder="- - - - - -" 
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  style={{ letterSpacing: otp.length > 0 ? '1rem' : '0.5rem', fontSize: '1.5rem', fontWeight: '700', textAlign: 'center' }}
+                />
+              </div>
+              <button onClick={handleVerifyOtp} className="btn-primary" disabled={loading || otp.length !== 6}>
+                {loading ? <CircleNotch size={24} className="spinner-animate" /> : 'Verify'}
               </button>
-            </div>
           </div>
+        )}
 
-          <div className="forgot-password-link">
-             <Link to="/forgot-password">Forgot password?</Link>
-          </div>
-
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? <CircleNotch size={24} className="spinner-animate" /> : 'Log In'}
-          </button>
-        </form>
-
-        {/* Footer Links */}
-        {!returningUser && (
+        {step === 1 && !returningUser && (
           <div className="login-prompt">
-              Don't have an account? <Link to="/onboarding">Create one</Link>
+              Don't have an account? <Link to="/register">Create one</Link>
           </div>
         )}
       </div>

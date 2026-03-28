@@ -84,7 +84,7 @@ const Welcome = () => {
 
   const finishOnboarding = () => {
     localStorage.setItem('has_seen_onboarding', 'true');
-    navigate('/onboarding');
+    navigate('/register');
   };
 
   // --- INTERACTION HANDLERS ---

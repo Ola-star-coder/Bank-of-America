@@ -4,37 +4,31 @@ import { toast } from 'react-toastify';
 import '../Onboarding.css';
 
 const PinSetup = ({ data, updateData, onNext }) => {
-  const [step, setStep] = useState(1); // 1 = Create, 2 = Confirm
+  const [step, setStep] = useState(1); 
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [isError, setIsError] = useState(false);
 
-  // --- HAPTIC FEEDBACK HELPER ---
   const triggerHaptic = () => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
       navigator.vibrate([100, 50, 100]); 
     }
   };
 
-  // --- SECURITY: WEAK PIN CHECKER ---
   const checkWeakPin = (testPin) => {
-    // 1. Repeating digits (e.g., 0000, 1111)
     if (/^(\d)\1{3}$/.test(testPin)) return "PIN cannot be repeating numbers.";
     
-    // 2. Sequential digits (e.g., 1234, 9876)
     const seqForward = "0123456789";
     const seqBackward = "9876543210";
     if (seqForward.includes(testPin) || seqBackward.includes(testPin)) {
       return "PIN cannot be sequential.";
     }
 
-    // 3. Birth Year (Pulls from Step 4: DOB "MM/DD/YYYY")
     if (data?.dob) {
-      const birthYear = data.dob.slice(-4); // Grabs the YYYY
+      const birthYear = data.dob.slice(-4); 
       if (testPin === birthYear) return "PIN cannot be your birth year.";
     }
-
-    return null; // Passes all security checks
+    return null; 
   };
 
   const handleNumClick = (num) => {
@@ -45,7 +39,6 @@ const PinSetup = ({ data, updateData, onNext }) => {
         const newPin = pin + num;
         setPin(newPin);
         
-        // When 4 digits are hit on Step 1, RUN THE SECURITY CHECK
         if (newPin.length === 4) {
           const weakError = checkWeakPin(newPin);
           
@@ -58,7 +51,6 @@ const PinSetup = ({ data, updateData, onNext }) => {
               setIsError(false);
             }, 800);
           } else {
-            // It's a strong PIN! Move to confirmation step.
             setTimeout(() => setStep(2), 300);
           }
         }
@@ -68,7 +60,6 @@ const PinSetup = ({ data, updateData, onNext }) => {
         const newConfirm = confirmPin + num;
         setConfirmPin(newConfirm);
         
-        // Auto-verify when 4 digits are hit on Step 2
         if (newConfirm.length === 4) {
           verifyPin(newConfirm);
         }
@@ -109,12 +100,12 @@ const PinSetup = ({ data, updateData, onNext }) => {
     : "Please confirm your Cash PIN";
 
   return (
-    <div className="pin-step-wrapper">
+    <div style={{ height: 'calc(100vh - 120px)', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
       
-      <div className="pin-top-section">
-        <h1 className="pin-title">{title}</h1>
+      <div style={{ height: '160px', width: '100%', maxWidth: '340px', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 20px' }}>
+        <h1 className="pin-title" style={{ fontSize: '20px', marginBottom: '24px', textAlign: 'center' }}>{title}</h1>
         
-        <div className={`pin-dots-container ${isError ? 'shake-animation' : ''}`}>
+        <div className={`pin-dots-container ${isError ? 'shake-animation' : ''}`} style={{ display: 'flex', gap: '20px', height: '24px', alignItems: 'center' }}>
           {[...Array(4)].map((_, i) => (
             <div 
               key={i} 
@@ -124,8 +115,8 @@ const PinSetup = ({ data, updateData, onNext }) => {
         </div>
       </div>
 
-      <div className="pin-bottom-section">
-        <div className="ob-numpad-grid">
+      <div style={{ marginTop: '40px', width: '100%' }}>
+        <div className="ob-numpad-grid" style={{ maxWidth: '280px', margin: '0 auto', gap: '16px' }}>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
             <button key={num} className="numpad-btn" onClick={() => handleNumClick(num.toString())}>
               {num}

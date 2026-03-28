@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -11,11 +10,12 @@ import { TransferModalProvider } from './Context/TransferModalContext';
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar/Navbar';
-import SplashScreen from './components/SplashScreen/SplashScreen'; // NEW: Our Gatekeeper
+import SplashScreen from './components/SplashScreen/SplashScreen';
 
 // Pages
 import Login from './Pages/Auth/Login';
-import OnboardingManager from './Pages/Auth/OnboardingManager/OnboardingManager';
+import Welcome from './Pages/Auth/Welcome';
+import OnboardingManager from './Pages/Auth/OnboardingManager/OnboardingManager'; // <-- NEW: Replaces old Register.jsx
 import DashboardHome from './Pages/Dashboard/Home';
 import Transfer from './Pages/Dashboard/Transfer/Transfer';
 import BankTransfer from './Pages/Dashboard/Transfer/BankTransfer';
@@ -23,8 +23,6 @@ import Settings from './Pages/Dashboard/Settings';
 import NotFound from './Pages/NotFound';
 import AllTransactions from './Pages/Dashboard/History/AllTransactions';
 import MyCards from './components/Cards/MyCards';
-import Welcome from './Pages/Auth/Welcome';
-
 
 function AppContent() {
   const { loading, user } = useAuth(); // Grab real-time Firebase status
@@ -40,19 +38,21 @@ function AppContent() {
     );
   }
 
-  // Check Onboarding Status (We will use this in Step 2)
- const hasSeenOnboarding = localStorage.getItem('has_seen_onboarding') === 'true';
+  // Check Onboarding Status
+  const hasSeenOnboarding = localStorage.getItem('has_seen_onboarding') === 'true';
 
   return (
     <>
       <Routes>
-       <Route path="/welcome" element={<Welcome />} />
-        
+        {/* --- PUBLIC AUTH ROUTES --- */}
+        <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
-       <Route path="/onboarding" element={<OnboardingManager />} />
+        
+        {/* Hooked up the 13-Step Onboarding Flow */}
+        <Route path="/register" element={<OnboardingManager />} />
         
         {/* --- PROTECTED DASHBOARD ROUTES --- */}
-       <Route 
+        <Route 
           path="/" 
           element={
             !hasSeenOnboarding ? <Navigate to="/welcome" replace /> :

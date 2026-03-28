@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../../../Context/AuthContext';
 import { db } from '../../../../Firebase/config';
-import { doc, runTransaction, arrayUnion, getDoc, updateDoc } from 'firebase/firestore'; 
+import { doc, runTransaction, arrayUnion, getDoc } from 'firebase/firestore'; 
 import { toast } from 'react-toastify';
 import { CircleNotch, ShieldCheck } from 'phosphor-react';
 import PinModal from '../../../../components/Modal/PinModal'; 
@@ -10,14 +10,9 @@ const ReviewStep = ({ data, onBack, onSuccess }) => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isPinOpen, setIsPinOpen] = useState(false);
-  
-  // NEW: User Decision State
-  const [saveToBen, setSaveToBen] = useState(true); // Default to true, let them uncheck
-  
-  const [pinMode, setPinMode] = useState('verify'); 
+  const [saveToBen, setSaveToBen] = useState(true);
   const [storedPin, setStoredPin] = useState(''); 
 
-  // ... (handleReviewClick & handlePinSuccess remain the same) ...
   const handleReviewClick = async () => {
     setIsLoading(true);
     try {
@@ -26,41 +21,30 @@ const ReviewStep = ({ data, onBack, onSuccess }) => {
 
         if (userSnap.exists()) {
             const userData = userSnap.data();
+            // Since they did onboarding, they definitely have a PIN. 
             if (userData.transactionPin) {
-                setPinMode('verify');
                 setStoredPin(userData.transactionPin);
                 setIsLoading(false);
-                setIsPinOpen(true);
+                setIsPinOpen(true); // Pop open the verify modal
             } else {
-                setPinMode('setup');
+                toast.error("Account error: No PIN found. Please contact support.");
                 setIsLoading(false);
-                setIsPinOpen(true);
-                toast.info("Please set a transaction PIN first.");
             }
         }
     } catch (error) {
         console.error(error);
+        toast.error("Failed to verify account.");
         setIsLoading(false);
     }
   };
 
-  const handlePinSuccess = async (newPin = null) => {
+  const handlePinSuccess = async () => {
     setIsPinOpen(false); 
     setIsLoading(true); 
-
-    if (pinMode === 'setup' && newPin) {
-        try {
-            await updateDoc(doc(db, "users", user.uid), { transactionPin: newPin });
-        } catch (err) {
-            toast.error("Failed to save PIN");
-            setIsLoading(false);
-            return;
-        }
-    }
     executeTransfer();
   };
 
-const executeTransfer = async () => {
+  const executeTransfer = async () => {
     try {
       const sendAmount = parseFloat(data.amount);
       if (isNaN(sendAmount)) { toast.error("Invalid Amount"); return; }
@@ -74,7 +58,6 @@ const executeTransfer = async () => {
         const newSenderBalance = currentSenderBalance - sendAmount;
         if (newSenderBalance < 0) throw "Insufficient Funds";
 
-        // 2. Prepare Debit Record (For You)
         const debitRecord = {
             id: 'tx_' + Date.now(),
             type: 'debit',
@@ -92,12 +75,9 @@ const executeTransfer = async () => {
             transactions: arrayUnion(debitRecord)
         };
 
-        // 3. Handle External vs Internal
         if (data.recipient.isExternal) {  
             transaction.update(senderRef, senderUpdates);
-            
         } else {
-            // --- INTERNAL TRANSFER (APP USER) ---
             const recipientRef = doc(db, "users", data.recipient.uid);
             const recipientDoc = await transaction.get(recipientRef);
             if (!recipientDoc.exists()) throw "Recipient error";
@@ -115,8 +95,6 @@ const executeTransfer = async () => {
                 status: 'success'
             };
 
-            // Update Sender
-            // (Beneficiary logic goes here if you kept it)
             transaction.update(senderRef, senderUpdates);
             transaction.update(recipientRef, { 
                 balance: newRecipientBalance,
@@ -132,7 +110,7 @@ const executeTransfer = async () => {
       toast.error("Transfer Failed: " + error);
       setIsLoading(false);
     }
-};
+  };
 
   return (
     <div className="step-content animate-slide-up">
@@ -152,10 +130,9 @@ const executeTransfer = async () => {
         </div>
         <div className="detail-row">
             <span>Bank</span>
-            <span style={{textTransform:'capitalize'}}>{data.recipient.bankName || 'Bridge'}</span>
+            <span style={{textTransform:'capitalize'}}>{data.recipient.bankName || 'Bridge Vault'}</span>
         </div>
         
-        {/* --- THE TOGGLE SWITCH --- */}
         <div className="detail-row">
             <span>Save Beneficiary</span>
             <label className="toggle-switch">
@@ -195,7 +172,7 @@ const executeTransfer = async () => {
         }}
         onSuccess={handlePinSuccess} 
         amount={data.amount}
-        mode={pinMode}         
+        mode="verify"        
         expectedPin={storedPin} 
       />
     </div>

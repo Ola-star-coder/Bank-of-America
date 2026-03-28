@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { CircleNotch, CheckCircle, XCircle, Info } from 'phosphor-react';
+import { db } from '../../../../Firebase/config';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import '../Onboarding.css';
-
-// A mock database of taken names to test the rejection state
-const TAKEN_CASHTAGS = ['bridge', 'admin', 'ceo', 'cash', 'money', 'john', 'dike'];
 
 const Cashtag = ({ data, updateData, onNext }) => {
   const [cashtag, setCashtag] = useState(data.cashtag || '');
-  const [status, setStatus] = useState('idle'); // 'idle', 'typing', 'checking', 'available', 'taken', 'short'
+  const [status, setStatus] = useState('idle'); // 'idle', 'typing', 'checking', 'available', 'taken', 'short', 'error'
   
   const inputRef = useRef(null);
 
@@ -15,8 +14,7 @@ const Cashtag = ({ data, updateData, onNext }) => {
     if (inputRef.current) inputRef.current.focus();
   }, []);
 
-  // --- THE MAGIC DEBOUNCE HOOK ---
-  // This watches the user type. When they pause for 600ms, it runs the "database check"
+  // REAL DATABASE QUERY
   useEffect(() => {
     if (cashtag.length === 0) {
       setStatus('idle');
@@ -28,24 +26,30 @@ const Cashtag = ({ data, updateData, onNext }) => {
       return;
     }
 
-    // Set to checking as soon as they meet the length requirement
     setStatus('checking');
 
-    const checkAvailability = setTimeout(() => {
-      if (TAKEN_CASHTAGS.includes(cashtag.toLowerCase())) {
-        setStatus('taken');
-      } else {
-        setStatus('available');
-      }
-    }, 600); // 600ms fake network delay
+    // Wait 600ms after they stop typing before hitting Firebase to save reads
+    const checkAvailability = setTimeout(async () => {
+      try {
+        const q = query(collection(db, "users"), where("cashtag", "==", cashtag));
+        const querySnapshot = await getDocs(q);
 
-    // If they start typing again before 600ms, cancel the check and start over
+        if (!querySnapshot.empty) {
+          setStatus('taken');
+        } else {
+          setStatus('available');
+        }
+      } catch (error) {
+        console.error("Error checking cashtag:", error);
+        setStatus('error');
+      }
+    }, 600); 
+
     return () => clearTimeout(checkAvailability);
   }, [cashtag]);
 
   const handleInputChange = (e) => {
     setStatus('typing');
-    // Force lowercase, alphanumeric only, max 20 chars
     const val = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 20);
     setCashtag(val);
   };
@@ -57,7 +61,6 @@ const Cashtag = ({ data, updateData, onNext }) => {
     }
   };
 
-  // --- DYNAMIC UI FEEDBACK GENERATOR ---
   const renderFeedback = () => {
     switch (status) {
       case 'checking':
@@ -88,6 +91,13 @@ const Cashtag = ({ data, updateData, onNext }) => {
             <span>Cashtags must be at least 3 characters.</span>
           </div>
         );
+      case 'error':
+        return (
+          <div className="feedback-message" style={{ color: '#EF4444' }}>
+            <XCircle size={16} weight="fill" />
+            <span>Network error. Please try again.</span>
+          </div>
+        );
       default:
         return <div className="feedback-message" style={{ opacity: 0 }}>Placeholder</div>;
     }
@@ -101,7 +111,6 @@ const Cashtag = ({ data, updateData, onNext }) => {
           You will be able to change this later in settings.
         </p>
 
-        {/* The Input Box */}
         <div 
           className="ob-input-group" 
           style={{ 
@@ -127,7 +136,6 @@ const Cashtag = ({ data, updateData, onNext }) => {
           />
         </div>
 
-        {/* The Playful Feedback Area */}
         {renderFeedback()}
       </div>
 

@@ -12,25 +12,24 @@ import HomeAddress from './Steps/HomeAddress';
 import DynamicKYC from './Steps/DynamicKYC';
 import AddDebitCard from './Steps/AddDebitCard';
 import Linking from './Steps/Linking';
-import Cashtag from './Steps/CashTag';
+import Cashtag from './Steps/Cashtag';
 import PinSetup from './Steps/PinSetup';
 import MeetCard from './Steps/MeetCard';
 import SyncContacts from './Steps/SyncContact';
 import WelcomeSuccess from './Steps/WelcomeSuccess';
 
-
 const OnboardingManager = () => {
   const navigate = useNavigate();
 
-  // 1. Load Step from Session Storage
+  // 1. Load Step from Local Storage
   const [currentStep, setCurrentStep] = useState(() => {
-    const savedStep = sessionStorage.getItem('ob_step');
+    const savedStep = localStorage.getItem('ob_draft_step');
     return savedStep ? parseInt(savedStep, 10) : 1;
   });
 
-  // 2. Load Data from Session Storage
+  // 2. Load Data from Local Storage
   const [onboardingData, setOnboardingData] = useState(() => {
-    const savedData = sessionStorage.getItem('ob_data');
+    const savedData = localStorage.getItem('ob_draft_data');
     return savedData ? JSON.parse(savedData) : {
       phoneOrEmail: '',
       confirmationResult: null,
@@ -49,13 +48,15 @@ const OnboardingManager = () => {
       cashtag: '',
       pin: '',
       cardColor: 'silver',
+      wantsPhysicalCard: false,
+      contactsSynced: false
     };
   });
 
   // 3. Auto-save everything on change
   useEffect(() => {
-    sessionStorage.setItem('ob_step', currentStep.toString());
-    sessionStorage.setItem('ob_data', JSON.stringify(onboardingData));
+    localStorage.setItem('ob_draft_step', currentStep.toString());
+    localStorage.setItem('ob_draft_data', JSON.stringify(onboardingData));
   }, [currentStep, onboardingData]);
 
   const updateData = (field, value) => {
@@ -68,14 +69,13 @@ const OnboardingManager = () => {
 
   const handleBack = () => {
     if (currentStep === 1) {
-      sessionStorage.removeItem('ob_data');
-      sessionStorage.removeItem('ob_step');
+      localStorage.removeItem('ob_draft_data');
+      localStorage.removeItem('ob_draft_step');
       navigate('/welcome'); 
     } else {
       setCurrentStep((prev) => prev - 1);
     }
   };
-
 
   const renderStep = () => {
     if (currentStep === 1) return <PhoneOrEmail data={onboardingData} updateData={updateData} onNext={handleNext} />;
@@ -85,10 +85,10 @@ const OnboardingManager = () => {
     if (currentStep === 5) return <HomeAddress data={onboardingData} updateData={updateData} onNext={handleNext} />;
     if (currentStep === 6) return <DynamicKYC data={onboardingData} updateData={updateData} onNext={handleNext} />;
     if (currentStep === 7) return <AddDebitCard data={onboardingData} updateData={updateData} onNext={handleNext} />;
-    if (currentStep === 8) return <Linking onNext={handleNext} />;
+    if (currentStep === 8) return <Linking data={onboardingData} onNext={handleNext} />;
     if (currentStep === 9) return <Cashtag data={onboardingData} updateData={updateData} onNext={handleNext} />;
-   if (currentStep === 10) return <PinSetup data={onboardingData} updateData={updateData} onNext={handleNext} />;
-   if (currentStep === 11) return <MeetCard updateData={updateData} onNext={handleNext} />;
+    if (currentStep === 10) return <PinSetup data={onboardingData} updateData={updateData} onNext={handleNext} />;
+    if (currentStep === 11) return <MeetCard updateData={updateData} onNext={handleNext} />;
     if (currentStep === 12) return <SyncContacts updateData={updateData} onNext={handleNext} />;
     if (currentStep === 13) return <WelcomeSuccess data={onboardingData} />;
     

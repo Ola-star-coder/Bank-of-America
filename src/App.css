@@ -1,8 +1,17 @@
+:root {
+  --z-bottom-nav: 50;
+  --z-fab: 60;
+  --z-sheet-overlay: 1000;
+  --z-sheet-content: 1001;
+  --z-modal-overlay: 2000;
+  --z-modal-content: 2001;
+  --z-splash: 9999;
+}
+
 #root {
   width: 100%;
   margin: 0;
   padding: 0;
-  /* Remove the 2rem padding! */
   box-sizing: border-box;
 }
 
