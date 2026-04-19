@@ -49,8 +49,6 @@ const AddDebitCard = ({ data, updateData, onNext }) => {
     const expValid = expDate.length === 5;
     const cvvValid = cvv.length >= 3;
     const zipValid = zipCode.length >= 3;
-
-    // Uncomment this line below if you ever need to see exactly what is failing in your browser console!
     // console.log({ cardValid, expValid, cvvValid, zipValid });
 
     return cardValid && expValid && cvvValid && zipValid;
